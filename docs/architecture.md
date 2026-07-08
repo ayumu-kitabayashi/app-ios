@@ -224,7 +224,7 @@ npm run deploy      # wrangler でデプロイ
 ## 7. 既知の制約・技術的負債
 
 <!-- AUTO:index-stats -->
-- 行数: 約 41k 行 (実測 41,118 行)
+- 行数: 約 41k 行 (実測 41,121 行)
 - ファイルサイズ: 約 1807 KB
 <!-- /AUTO:index-stats -->
 
