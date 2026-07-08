@@ -31,6 +31,11 @@ workflows:
           agvtool new-version -all "$PROJECT_BUILD_NUMBER"
       - name: Set up code signing
         script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "com.reliefnote.app" \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
           xcode-project use-profiles
       - name: Build ipa
         script: |
