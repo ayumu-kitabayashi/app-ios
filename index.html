@@ -124,6 +124,9 @@
         html {
             /* iOS のオーバースクロール時の隙間色をキャンバスと揃える */
             background: var(--bg-warm);
+            /* iOS WebView の文字自動拡大を無効化（実機で全体がズレる原因） */
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
 
         body {
