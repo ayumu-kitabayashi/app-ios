@@ -1,7 +1,7 @@
 # ReliefNote アーキテクチャ概要
 
 **最終更新**: <!-- AUTO:last-updated -->
-2026-04-22
+2026-07-08
 <!-- /AUTO:last-updated --> / **対象読者**: 新規参加エンジニア・CTO 候補・技術アドバイザー
 
 ReliefNote は日本の遺族向けに、葬儀後の手続きを案内する Web アプリケーションです。
@@ -78,15 +78,16 @@ ReliefNote は日本の遺族向けに、葬儀後の手続きを案内する We
 <!-- AUTO:csv-stats -->
 | ファイル | データ行数 |
 |---|---|
-| `tasks_master.csv` | 90 |
-| `rules_master.csv` | 90 |
+| `tasks_master.csv` | 55 |
+| `rules_master.csv` | 55 |
 | `questions_master.csv` | 39 |
-| `task_content_master.csv` | 92 |
-| `phase_master.csv` | 8 |
+| `task_content_master.csv` | 57 |
+| `phase_master.csv` | 7 |
 | `message_master.csv` | 24 |
-| `task_expert_map.csv` | 30 |
-| `channel_override_master.csv` | 131 |
-| `locale_override_master.csv` | 144 |
+| `task_expert_map.csv` | 22 |
+| `channel_override_master.csv` | 100 |
+| `locale_override_master.csv` | 109 |
+| `library_articles_master.csv` | 121 |
 <!-- /AUTO:csv-stats -->
 
 各 CSV の役割:
@@ -202,6 +203,7 @@ npm run deploy      # wrangler でデプロイ
 - `008_kpi_views_anon_grant.sql`
 - `009_contact_inquiries.sql`
 - `010_extend_ttl_to_365_days.sql`
+- `011_funeral_followups.sql`
 <!-- /AUTO:migrations-list -->
 
 ---
@@ -222,8 +224,8 @@ npm run deploy      # wrangler でデプロイ
 ## 7. 既知の制約・技術的負債
 
 <!-- AUTO:index-stats -->
-- 行数: 約 30k 行 (実測 29,563 行)
-- ファイルサイズ: 約 1347 KB
+- 行数: 約 41k 行 (実測 41,118 行)
+- ファイルサイズ: 約 1807 KB
 <!-- /AUTO:index-stats -->
 
 - 単一 `index.html` が肥大化中。可読性は grep で耐えているが、機能ファイル分割の検討余地あり
