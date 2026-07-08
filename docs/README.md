@@ -3,9 +3,9 @@
 ReliefNote の技術仕様・設計・移行プランをまとめたディレクトリです。
 
 **最終自動更新**: <!-- AUTO:last-updated -->
-2026-04-22
+2026-07-08
 <!-- /AUTO:last-updated --> / **現在のアプリバージョン**: <!-- AUTO:app-version -->
-`rn-2026-04-22-phase6r`
+`rn-2026-04-23-phase7c`
 <!-- /AUTO:app-version -->
 
 ## 目的別ガイド

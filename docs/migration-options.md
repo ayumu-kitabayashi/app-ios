@@ -1,7 +1,7 @@
 # 引き継ぎ・移行プラン
 
 **最終更新**: <!-- AUTO:last-updated -->
-2026-04-22
+2026-07-08
 <!-- /AUTO:last-updated --> / **対象読者**: 北林 / CTO 候補 / 将来雇用するエンジニア
 
 ReliefNote MVP は Vanilla JS + Cloudflare Workers + Supabase で構築されています。
