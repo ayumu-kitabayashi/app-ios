@@ -3,7 +3,7 @@
   "appName": "ReliefNote",
   "webDir": "www",
   "ios": {
-    "contentInset": "always"
+    "contentInset": "never"
   },
   "server": {
     "iosScheme": "capacitor"
