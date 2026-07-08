@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#3A3E31"/>
+  <!-- 葉（relief/静けさ）を中央に。温かい白＋金の葉脈 -->
+  <g transform="translate(512 512)">
+    <path d="M 0 -235
+             C 150 -190, 205 -60, 175 90
+             C 150 205, 60 250, 0 258
+             C -60 250, -150 205, -175 90
+             C -205 -60, -150 -190, 0 -235 Z"
+          fill="#F1EFE8"/>
+    <path d="M 0 -200 L 0 235" stroke="#C79355" stroke-width="14" stroke-linecap="round"/>
+    <path d="M 0 -70 C 55 -110, 105 -120, 140 -110" stroke="#C79355" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M 0 -70 C -55 -110, -105 -120, -140 -110" stroke="#C79355" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M 0 40 C 50 5, 95 -3, 128 5" stroke="#C79355" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M 0 40 C -50 5, -95 -3, -128 5" stroke="#C79355" stroke-width="12" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

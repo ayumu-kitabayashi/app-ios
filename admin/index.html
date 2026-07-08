@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReliefNote サポーター管理画面</title>
+<style>
+:root {
+    --bg: #FBF9F5;
+    --surface: #FFFFFF;
+    --border: #E5E1D8;
+    --border-light: #EFEAE0;
+    --text: #3A3F32;
+    --text-secondary: #6E6A60;
+    --text-tertiary: #A49B8C;
+    --accent: #D4A840;
+    --accent-strong: #A87E2A;
+    --bg-secondary: #F5F3EE;
+    --danger: #C76D56;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+}
+.app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: 56px 1fr;
+    grid-template-areas:
+        "header header"
+        "sidebar main";
+    height: 100vh;
+}
+.header {
+    grid-area: header;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    gap: 14px;
+}
+.header-title { font-size: 15px; font-weight: 700; }
+.header-status { font-size: 11px; color: var(--text-secondary); margin-left: auto; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+.header-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+}
+.header-btn:hover { background: var(--bg-secondary); }
+.sidebar {
+    grid-area: sidebar;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+}
+.conv-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background 0.1s ease;
+    position: relative;
+}
+.conv-item:hover { background: var(--bg-secondary); }
+.conv-item.active { background: #FBF7EA; border-left: 3px solid var(--accent); padding-left: 13px; }
+.conv-item.unread::before {
+    content: '';
+    position: absolute;
+    top: 18px; right: 14px;
+    width: 8px; height: 8px;
+    background: var(--accent); border-radius: 50%;
+}
+.conv-name {
+    font-weight: 700;
+    font-size: 13.5px;
+    margin-bottom: 4px;
+    color: var(--text);
+}
+.conv-preview {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding-right: 30px;
+}
+.conv-time {
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+}
+.empty-state {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+.main { grid-area: main; display: flex; flex-direction: column; overflow: hidden; }
+.main-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+.chat-header {
+    padding: 12px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.chat-header-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    color: var(--text);
+}
+.chat-header-info { flex: 1; }
+.chat-header-name { font-weight: 700; font-size: 14px; }
+.chat-header-sub { font-size: 11px; color: var(--text-secondary); }
+.chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 20px;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.msg { display: flex; max-width: 70%; }
+.msg.user { align-self: flex-start; }
+.msg.supporter { align-self: flex-end; }
+.msg-bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+.msg.user .msg-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-bottom-left-radius: 4px;
+}
+.msg.supporter .msg-bubble {
+    background: var(--text);
+    color: #FFFFFF;
+    border-bottom-right-radius: 4px;
+}
+.msg-meta {
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    padding: 0 4px;
+}
+.msg.supporter .msg-meta { text-align: right; }
+.date-sep {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin: 6px 0;
+}
+.reply-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 12px 18px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+}
+.reply-input {
+    flex: 1;
+    min-height: 40px;
+    max-height: 160px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+}
+.reply-input:focus { outline: none; border-color: var(--accent-strong); }
+.reply-btn {
+    padding: 10px 20px;
+    background: var(--text);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 80px;
+}
+.reply-btn:disabled { background: var(--text-tertiary); cursor: not-allowed; }
+
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+}
+.modal {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%; max-width: 420px;
+}
+.modal h2 { margin: 0 0 12px; font-size: 18px; }
+.modal p { margin: 0 0 16px; color: var(--text-secondary); font-size: 13px; }
+.modal-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-btn-primary {
+    padding: 10px 20px;
+    background: var(--text);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.modal-btn-secondary {
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.toast {
+    position: fixed;
+    bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--text);
+    color: #FFFFFF;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.toast.error { background: var(--danger); }
+
+@media (max-width: 700px) {
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 56px 1fr;
+        grid-template-areas: "header" "main-or-sidebar";
+    }
+    .sidebar { grid-area: main-or-sidebar; }
+    .main { grid-area: main-or-sidebar; display: none; }
+    .app.show-main .sidebar { display: none; }
+    .app.show-main .main { display: flex; }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+    <header class="header">
+        <span class="header-title">ReliefNote サポーター</span>
+        <span class="header-status" id="headerStatus">未認証</span>
+        <div class="header-actions">
+            <button class="header-btn" id="btnSetName">名前: 未設定</button>
+            <button class="header-btn" id="btnLogout">ログアウト</button>
+        </div>
+    </header>
+    <aside class="sidebar" id="sidebar">
+        <div class="empty-state">読み込み中...</div>
+    </aside>
+    <main class="main" id="main">
+        <div class="main-empty">左の会話をクリックして開いてください</div>
+    </main>
+</div>
+
+<div class="modal-overlay" id="tokenModal" style="display:none;">
+    <div class="modal">
+        <h2>管理トークンを入力</h2>
+        <p>Cloudflare Worker に設定した <code>ADMIN_TOKEN</code> を入力してください（端末に保存され、次回以降は自動でログインします）。</p>
+        <input type="password" class="modal-input" id="tokenInput" placeholder="64文字の16進数...">
+        <div class="modal-actions">
+            <button class="modal-btn-primary" id="tokenSaveBtn">保存</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="nameModal" style="display:none;">
+    <div class="modal">
+        <h2>サポーター名</h2>
+        <p>ユーザーへのメッセージに表示される名前です（後で変更可能）。</p>
+        <input type="text" class="modal-input" id="nameInput" placeholder="例: 田中（サポーター）" maxlength="40">
+        <div class="modal-actions">
+            <button class="modal-btn-secondary" id="nameCancelBtn">キャンセル</button>
+            <button class="modal-btn-primary" id="nameSaveBtn">保存</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKER_URL = 'https://reliefnote-ai-chat.reliefnote.workers.dev';
+const POLL_LIST_MS = 10000;
+const POLL_MSG_MS = 5000;
+const TOKEN_KEY = 'rn_admin_token';
+const NAME_KEY = 'rn_admin_supporter_name';
+
+const state = {
+    token: localStorage.getItem(TOKEN_KEY) || '',
+    supporterName: localStorage.getItem(NAME_KEY) || '',
+    conversations: [],
+    selectedId: null,
+    messages: [],
+    listTimer: null,
+    msgTimer: null,
+};
+
+function $(id) { return document.getElementById(id); }
+
+function showToast(text, isError) {
+    const el = $('toast');
+    el.textContent = text;
+    el.classList.toggle('error', !!isError);
+    el.classList.add('show');
+    setTimeout(function() { el.classList.remove('show'); }, 3000);
+}
+
+function escapeHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fmtTime(ts) {
+    const d = new Date(ts);
+    return ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+}
+function fmtDate(ts) {
+    const d = new Date(ts);
+    return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate();
+}
+function fmtListTime(ts) {
+    const now = new Date();
+    const d = new Date(ts);
+    if (d.toDateString() === now.toDateString()) return fmtTime(ts);
+    const yest = new Date(now); yest.setDate(now.getDate()-1);
+    if (d.toDateString() === yest.toDateString()) return '昨日 ' + fmtTime(ts);
+    return (d.getMonth()+1) + '/' + d.getDate();
+}
+
+async function apiGet(path) {
+    const resp = await fetch(WORKER_URL + path, {
+        headers: { 'X-Admin-Token': state.token },
+    });
+    if (resp.status === 401) {
+        promptToken();
+        throw new Error('unauthorized');
+    }
+    if (!resp.ok) throw new Error('http ' + resp.status);
+    return resp.json();
+}
+
+async function apiPost(path, body) {
+    const resp = await fetch(WORKER_URL + path, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': state.token,
+        },
+        body: JSON.stringify(body),
+    });
+    if (resp.status === 401) {
+        promptToken();
+        throw new Error('unauthorized');
+    }
+    if (!resp.ok) {
+        const err = await resp.json().catch(function() { return {}; });
+        throw new Error(err.error || ('http ' + resp.status));
+    }
+    return resp.json();
+}
+
+async function loadConversations() {
+    if (!state.token) return;
+    try {
+        const data = await apiGet('/admin/conversations');
+        state.conversations = data.conversations || [];
+        renderSidebar();
+        $('headerStatus').textContent = '接続中 ・ ' + state.conversations.length + '件';
+    } catch (e) {
+        if (e.message !== 'unauthorized') {
+            $('headerStatus').textContent = 'エラー: ' + e.message;
+        }
+    }
+}
+
+async function loadMessages(conversationId) {
+    if (!state.token || !conversationId) return;
+    try {
+        const data = await apiGet('/admin/messages?conversationId=' + encodeURIComponent(conversationId));
+        state.messages = data.messages || [];
+        renderMain();
+    } catch (e) {
+        if (e.message !== 'unauthorized') {
+            showToast('メッセージ取得失敗: ' + e.message, true);
+        }
+    }
+}
+
+function renderSidebar() {
+    const el = $('sidebar');
+    if (state.conversations.length === 0) {
+        el.innerHTML = '<div class="empty-state">まだ会話がありません</div>';
+        return;
+    }
+    let html = '';
+    state.conversations.forEach(function(c) {
+        const name = c.displayName || ('匿名 #' + (c.sessionId||'').slice(-6));
+        const preview = c.lastBody ? (c.lastSender === 'supporter' ? '↳ ' : '') + c.lastBody : '';
+        const cls = (c.id === state.selectedId ? 'active' : '') + (c.unreadForSupporter ? ' unread' : '');
+        html += '<div class="conv-item ' + cls + '" data-id="' + c.id + '">'
+            + '<div class="conv-name">' + escapeHtml(name) + '</div>'
+            + '<div class="conv-preview">' + escapeHtml(preview) + '</div>'
+            + '<div class="conv-time">' + fmtListTime(c.lastMessageAt) + '</div>'
+            + '</div>';
+    });
+    el.innerHTML = html;
+    el.querySelectorAll('.conv-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            selectConversation(this.dataset.id);
+        });
+    });
+}
+
+function renderMain() {
+    const el = $('main');
+    if (!state.selectedId) {
+        el.innerHTML = '<div class="main-empty">左の会話をクリックして開いてください</div>';
+        return;
+    }
+    const conv = state.conversations.find(function(c) { return c.id === state.selectedId; });
+    const name = conv ? (conv.displayName || ('匿名 #' + (conv.sessionId||'').slice(-6))) : '会話';
+    let html = '<div class="chat-header">'
+        + '<div class="chat-header-avatar">' + escapeHtml((name||'?').charAt(0)) + '</div>'
+        + '<div class="chat-header-info">'
+        + '<div class="chat-header-name">' + escapeHtml(name) + '</div>'
+        + '<div class="chat-header-sub">セッション: ' + escapeHtml((conv && conv.sessionId)||'') + '</div>'
+        + '</div></div>';
+    html += '<div class="chat-body" id="chatBody">';
+    let lastDate = '';
+    state.messages.forEach(function(m) {
+        const dateStr = fmtDate(m.createdAt);
+        if (dateStr !== lastDate) {
+            html += '<div class="date-sep">' + dateStr + '</div>';
+            lastDate = dateStr;
+        }
+        const isSupporter = m.senderType === 'supporter';
+        const bubble = escapeHtml(m.body).replace(/\n/g,'<br>');
+        const meta = (isSupporter && m.senderName ? escapeHtml(m.senderName) + ' ・ ' : '') + fmtTime(m.createdAt);
+        html += '<div class="msg ' + (isSupporter ? 'supporter' : 'user') + '">'
+            + '<div>'
+            + '<div class="msg-bubble">' + bubble + '</div>'
+            + '<div class="msg-meta">' + meta + '</div>'
+            + '</div></div>';
+    });
+    html += '</div>';
+    html += '<div class="reply-row">'
+        + '<textarea class="reply-input" id="replyInput" placeholder="返信を入力 ・ Enter で送信、Shift+Enter で改行"></textarea>'
+        + '<button class="reply-btn" id="replyBtn">送信</button>'
+        + '</div>';
+    el.innerHTML = html;
+    document.getElementById('chatBody').scrollTop = 99999;
+    document.getElementById('replyBtn').addEventListener('click', sendReply);
+    const input = document.getElementById('replyInput');
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendReply();
+        }
+    });
+    input.focus();
+}
+
+function selectConversation(id) {
+    state.selectedId = id;
+    state.messages = [];
+    renderSidebar();
+    renderMain();
+    loadMessages(id);
+    if (state.msgTimer) clearInterval(state.msgTimer);
+    state.msgTimer = setInterval(function() { loadMessages(id); }, POLL_MSG_MS);
+}
+
+async function sendReply() {
+    const input = document.getElementById('replyInput');
+    if (!input || !state.selectedId) return;
+    const body = (input.value || '').trim();
+    if (!body) return;
+    if (!state.supporterName) {
+        promptName();
+        return;
+    }
+    const btn = document.getElementById('replyBtn');
+    btn.disabled = true;
+    try {
+        await apiPost('/admin/reply', {
+            conversationId: state.selectedId,
+            supporterName: state.supporterName,
+            body: body,
+        });
+        input.value = '';
+        await loadMessages(state.selectedId);
+        await loadConversations();
+    } catch (e) {
+        showToast('送信失敗: ' + e.message, true);
+    } finally {
+        btn.disabled = false;
+        input.focus();
+    }
+}
+
+function promptToken() { $('tokenModal').style.display = 'flex'; $('tokenInput').focus(); }
+function hideTokenModal() { $('tokenModal').style.display = 'none'; }
+function promptName() { $('nameInput').value = state.supporterName; $('nameModal').style.display = 'flex'; $('nameInput').focus(); }
+function hideNameModal() { $('nameModal').style.display = 'none'; }
+
+$('tokenSaveBtn').addEventListener('click', function() {
+    const v = $('tokenInput').value.trim();
+    if (!v) return;
+    state.token = v;
+    localStorage.setItem(TOKEN_KEY, v);
+    hideTokenModal();
+    boot();
+});
+$('tokenInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') $('tokenSaveBtn').click();
+});
+
+$('nameSaveBtn').addEventListener('click', function() {
+    const v = $('nameInput').value.trim();
+    if (!v) return;
+    state.supporterName = v;
+    localStorage.setItem(NAME_KEY, v);
+    $('btnSetName').textContent = '名前: ' + v;
+    hideNameModal();
+});
+$('nameCancelBtn').addEventListener('click', hideNameModal);
+
+$('btnSetName').addEventListener('click', promptName);
+$('btnLogout').addEventListener('click', function() {
+    if (!confirm('ログアウトしますか？トークンが端末から削除されます。')) return;
+    localStorage.removeItem(TOKEN_KEY);
+    state.token = '';
+    if (state.listTimer) clearInterval(state.listTimer);
+    if (state.msgTimer) clearInterval(state.msgTimer);
+    location.reload();
+});
+
+function boot() {
+    if (state.supporterName) $('btnSetName').textContent = '名前: ' + state.supporterName;
+    if (!state.token) { promptToken(); return; }
+    loadConversations();
+    if (state.listTimer) clearInterval(state.listTimer);
+    state.listTimer = setInterval(loadConversations, POLL_LIST_MS);
+}
+
+boot();
+</script>
+</body>
+</html>

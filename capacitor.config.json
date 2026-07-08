@@ -1,0 +1,16 @@
+{
+  "appId": "com.reliefnote.app",
+  "appName": "ReliefNote",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always"
+  },
+  "server": {
+    "iosScheme": "capacitor"
+  },
+  "plugins": {
+    "CapacitorUpdater": {
+      "autoUpdate": true
+    }
+  }
+}

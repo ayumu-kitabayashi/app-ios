@@ -1,0 +1,23 @@
+# 依存・ビルド生成物
+node_modules/
+www/
+.wrangler/
+
+# Capacitor iOS のビルド生成物（プロジェクト ios/ 自体は追跡する）
+ios/App/Pods/
+ios/App/App/public/
+ios/App/build/
+ios/DerivedData/
+ios/App/DerivedData/
+
+# アセットの中間生成物（元の svg は追跡・png/splash は再生成可）
+assets/*.svg.png
+
+# iOSビルドに不要な重い同梱物（アプリから参照なし）
+ai-chat-worker/
+demo.html
+images/u6463753548_*
+
+# OS / ログ
+.DS_Store
+*.log

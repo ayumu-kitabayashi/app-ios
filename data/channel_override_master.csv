@@ -1,0 +1,101 @@
+override_id,target_type,target_id,field_name,override_type,override_value
+CH-FUN-001,ui_config,global,subtitle,REPLACE,遺族のためのGPS
+CH-FUN-002,ui_config,global,header_logo_text,HIDE,
+CH-FUN-003,question,Q-FUN-STATUS-01,prefill_answer,PREFILL,ARRANGING
+CH-FUN-004,question,Q-AGRI-01,prefill_answer,CLEAR,
+CH-FUN-020,task,RN-D7-01,address,HIDE,
+CH-FUN-021,task,RN-D7-01,phone,HIDE,
+CH-FUN-024,task,RN-D7-06,action_summary,REPLACE,お住まいの市区町村役場に「死亡届」を提出し、「火葬許可証」を受け取る。届出は葬儀社が代行してくれる場合も多い。
+CH-FUN-025,task,RN-D7-06,destination,REPLACE,お住まいの市区町村役場
+CH-FUN-026,task,RN-D7-06,steps_short,REPLACE,1. 死亡診断書の原本と届出人の印鑑を用意 2. お住まいの市区町村役場で伝える 3. 必要事項を記入して提出 4. 火葬許可証を受け取りクリアファイルで保管
+CH-FUN-027,task,RN-D7-06,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-028,task,RN-D7-06,address,HIDE,
+CH-FUN-029,task,RN-D7-06,phone,HIDE,
+CH-FUN-150,task,RN-D7-16,address,REPLACE,最寄りのキャリアショップまたは電話/オンライン手続きを推奨
+CH-FUN-151,task,RN-D7-16,steps_detail,REPLACE,1. よく使われるものは誕生日（6桁）、電話番号の下4桁、結婚記念日です。【重要】10回間違えるとデータが消える機種があります。3回試してダメなら止めてください。\n2. iPhoneの場合はAppleサポート（0120-277-535）にご相談ください。Digital Legacyの案内を受けられます。\n3. Androidの場合はGoogleの「故人のアカウントに関するリクエスト」ページから申請できます。審査には数週間かかります。\n4. 費用目安は3〜10万円です。最寄りのキャリアショップまたは電話/オンラインで対応できます。
+CH-FUN-152,task,RN-D7-17,address,HIDE,
+CH-FUN-153,task,RN-D7-17,phone,HIDE,
+CH-FUN-154,task,RN-D7-17,steps_detail,REPLACE,1. 例：口座残高600万円・相続人が配偶者と子1人の場合、配偶者は600万×1/3×1/2＝100万円まで引き出せます。\n2. 葬儀費用・医療費の精算・当面の生活費を概算してみてください。\n3.【重要】実際の引き出しは銀行届出（口座凍結）後に行います。凍結前に無理に引き出す必要はありません。口座がある銀行すべてでご利用いただけます。家庭裁判所の審判による払戻し（上限なし）もあります。
+CH-FUN-155,task,RN-D7-17,office_hours,REPLACE,平日 9:00-15:00（一般的な窓口時間）
+CH-FUN-050,task,RN-D14-01,action_summary,REPLACE,世帯主変更届を提出する。故人が世帯主で、残りの世帯員が2人以上の場合に必要。
+CH-FUN-051,task,RN-D14-01,destination,REPLACE,お住まいの市区町村役場
+CH-FUN-052,task,RN-D14-01,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-053,task,RN-D14-01,address,HIDE,
+CH-FUN-054,task,RN-D14-01,phone,HIDE,
+CH-FUN-055,task,RN-D14-02,destination,REPLACE,国保・後期高齢者：お住まいの市区町村役場／社保：故人の勤務先
+CH-FUN-056,task,RN-D14-02,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-057,task,RN-D14-02,address,HIDE,
+CH-FUN-058,task,RN-D14-02,phone,HIDE,
+CH-FUN-059,task,RN-D14-03,destination,REPLACE,国保・後期高齢者：お住まいの市区町村役場／社保：協会けんぽ支部等
+CH-FUN-060,task,RN-D14-03,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-061,task,RN-D14-03,address,HIDE,
+CH-FUN-062,task,RN-D14-03,phone,HIDE,
+CH-FUN-063,task,RN-D14-04,destination,REPLACE,国保・後期高齢者：お住まいの市区町村役場／社保：協会けんぽ支部等
+CH-FUN-064,task,RN-D14-04,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-065,task,RN-D14-04,address,HIDE,
+CH-FUN-066,task,RN-D14-04,phone,HIDE,
+CH-FUN-067,task,RN-D14-05,destination,REPLACE,お住まいの市区町村役場
+CH-FUN-068,task,RN-D14-05,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-069,task,RN-D14-05,address,HIDE,
+CH-FUN-070,task,RN-D14-05,phone,HIDE,
+CH-FUN-071,task,RN-D14-06,destination,REPLACE,最寄りの年金事務所／国民年金のみはお住まいの市区町村役場でも可
+CH-FUN-072,task,RN-D14-06,steps_detail,REPLACE,1. 届出先は、厚生年金の場合は最寄りの年金事務所、国民年金のみの場合は役場でも届出できます。 2.— 3. 同時に手続きすれば1回の来所で済みます。 4. 郵送でも提出できます。マイナンバー登録済みの場合は届出不要になることもあります。
+CH-FUN-073,task,RN-D14-06,address,HIDE,
+CH-FUN-074,task,RN-D14-06,phone,REPLACE,0570-05-1165（ねんきんダイヤル）
+CH-FUN-075,task,RN-D14-07,destination,REPLACE,最寄りの年金事務所／国民年金はお住まいの市区町村役場
+CH-FUN-076,task,RN-D14-07,address,HIDE,
+CH-FUN-077,task,RN-D14-07,phone,REPLACE,0570-05-1165（ねんきんダイヤル）
+CH-FUN-078,task,RN-D14-08,destination,REPLACE,最寄りの年金事務所
+CH-FUN-079,task,RN-D14-08,steps_detail,REPLACE,1. 年額約80万円に子の加算があります。 2. 金額は加入期間と報酬によって異なります。 3. 最寄りの年金事務所にご確認ください。 4. 請求から支給開始まで3〜4か月かかります。5年以内であれば遡及して受給できます。
+CH-FUN-080,task,RN-D14-08,address,HIDE,
+CH-FUN-081,task,RN-D14-08,phone,REPLACE,0570-05-1165（ねんきんダイヤル）
+CH-FUN-082,task,RN-D14-09,address,HIDE,
+CH-FUN-083,task,RN-D14-09,phone,HIDE,
+CH-FUN-084,task,RN-D14-09,office_hours,REPLACE,平日 9:00-15:00（一般的な窓口時間）
+CH-FUN-085,task,RN-D14-15,destination,REPLACE,電力会社・ガス会社・お住まいの市区町村水道担当
+CH-FUN-086,task,RN-D14-15,steps_short,REPLACE,1. 故人名義の公共料金を確認 2. 住み続ける→名義変更 3. 空き家→解約（冬季の水抜き注意） 4. 水道→お住まいの市区町村に連絡
+CH-FUN-087,task,RN-D14-15,faq,REPLACE,Q.電話1本でできる？→名義変更は多くの場合、電話のみで完了します\nQ.冬に水道を解約したい→凍結リスクがあります。寒冷地は水抜きが必須です\nQ.ガス閉栓はどうする？→ガス会社にお電話ください
+CH-FUN-088,task,RN-D14-16,address,HIDE,
+CH-FUN-170,task,RN-D14-16,steps_detail,REPLACE,1.【重要】携帯を先に解約すると、他のサービスにログインできなくなる恐れがあります。 2.— 3. カスタマーセンターにお電話ください。 4. 最寄りのキャリアショップまたは電話/オンラインでの手続きをおすすめします。死亡による解約は違約金が免除されることが多いです。 5. LINEのバックアップは解約前に行ってください。 6. NHKは0120-151-515にお電話ください。届出書が届きますので返送してください。 7. 固定電話（NTT）は116にお電話ください。休止か解約かを選べます。
+CH-FUN-089,task,RN-D14-18,destination,REPLACE,民間：管理会社・大家／公営住宅：お住まいの市区町村役場
+CH-FUN-090,task,RN-D14-18,office_hours,REPLACE,役場：平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-091,task,RN-D14-18,address,HIDE,
+CH-FUN-092,task,RN-D14-18,phone,HIDE,
+CH-FUN-171,task,RN-D14-18,steps_detail,REPLACE,1. 公営住宅の場合は役場にご連絡ください。同居のご家族であれば承継できる場合があります。 2. 民間賃貸の場合は管理会社や大家にご連絡ください。解約は通常1か月前の予告が必要です。 3. 遺品整理業者は2〜3社から見積もりを取ることをおすすめします。 4. 退去が決まったら郵便局で転居届（転送届）を提出してください。届出日から1年間転送されます。郵便局窓口またはe転居（オンライン）で手続きできます。届出から反映まで1週間程度かかります。
+CH-FUN-172,task,RN-D14-18,faq,REPLACE,Q.公営住宅に住み続けたい→同居されているご家族なら承継できる場合があります。お住まいの役場にご相談ください\nQ.退去のタイミングは？→解約予告期間(通常1か月前)が必要です\nQ.遺品整理業者を探している→近隣の業者に見積もりをご依頼ください\nQ.郵便転送届は？→郵便局またはe転居で届出してください。反映まで1週間程度かかります
+CH-FUN-093,task,RN-D14-20,steps_detail,REPLACE,1. 銀行の貸金庫も確認してください。 2. 最寄りの法務局で遺言書保管事実証明書を請求できます。 3. 戸籍謄本と本人確認書類を持参してください。 4. 法務局で保管されたものや公正証書遺言は検認が不要です。
+CH-FUN-099,task,RN-D14-23,destination,REPLACE,国保：お住まいの市区町村役場／ご自身の勤務先
+CH-FUN-100,task,RN-D14-23,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-101,task,RN-D14-23,address,HIDE,
+CH-FUN-102,task,RN-D14-23,phone,HIDE,
+CH-FUN-103,task,RN-D14-24,destination,REPLACE,お住まいの市区町村役場
+CH-FUN-104,task,RN-D14-24,office_hours,REPLACE,平日 8:30-17:15（一般的な開庁時間）
+CH-FUN-105,task,RN-D14-24,address,HIDE,
+CH-FUN-106,task,RN-D14-24,phone,HIDE,
+CH-FUN-110,task,RN-M3-01,destination,REPLACE,最寄りの家庭裁判所
+CH-FUN-111,task,RN-M3-01,steps_detail,REPLACE,1. 財産目録の作成と負債調査を並行して進めてください。 2.— 3.【重要】3か月以内に判断が必要です。 4. 最寄りの家庭裁判所に申述します。必要書類一式をお持ちください。 5. 3か月の延長を申し立てることもできます。
+CH-FUN-112,task,RN-M3-01,address,HIDE,
+CH-FUN-113,task,RN-M3-01,phone,HIDE,
+CH-FUN-114,task,RN-M3-03,destination,REPLACE,故人の本籍地の市区町村役場／広域交付で最寄り役場も可
+CH-FUN-115,task,RN-M3-03,address,HIDE,
+CH-FUN-116,task,RN-M3-03,phone,HIDE,
+CH-FUN-126,task,RN-M4-01,destination,REPLACE,最寄りの税務署
+CH-FUN-127,task,RN-M4-01,steps_detail,REPLACE,1. 年金400万円以下で他の所得が20万円以下であれば原則不要です。判断がつかない場合は最寄りの税務署にお電話ください。 2. 所得の計算は1月1日から死亡日までの分です。 3. 国税庁のWebサイトで申告書を作成できます。 4. 最寄りの税務署に提出してください。
+CH-FUN-128,task,RN-M4-01,address,HIDE,
+CH-FUN-129,task,RN-M4-01,phone,HIDE,
+CH-FUN-130,task,RN-M10-01,destination,REPLACE,最寄りの税務署
+CH-FUN-131,task,RN-M10-01,steps_detail,REPLACE,1. 基礎控除の計算例をご確認ください。 2.— 3. 特例を使って税額が0円でも申告が必要です。期限は10か月です。 4. 税理士への依頼費用の目安は遺産総額の0.5〜1%です。最寄りの税務署に提出してください。農地には納税猶予の特例があります。
+CH-FUN-132,task,RN-M10-01,address,HIDE,
+CH-FUN-133,task,RN-M10-01,phone,HIDE,
+CH-FUN-134,task,RN-M10-05,address,HIDE,
+CH-FUN-135,task,RN-M10-05,phone,HIDE,
+CH-FUN-136,task,RN-M10-05,office_hours,REPLACE,平日 9:00-15:00（一般的な窓口時間）
+CH-FUN-137,task,RN-M10-07,destination,REPLACE,普通車：最寄りの運輸支局／軽：軽自動車検査協会
+CH-FUN-138,task,RN-M10-07,steps_detail,REPLACE,1. ディーラーやローン会社の所有になっている場合は、先に所有権解除が必要です。 2. 売却する場合はまず名義変更を行ってください。 3. 最寄りの運輸支局に必要書類一式を持参してください。代行を依頼する場合の費用は1〜3万円程度です。 4. →RN-D14-12もご確認ください。 5. 運転免許証の返却は義務ではなく罰則もありません。最寄りの警察署に持参すれば返却できます。
+CH-FUN-139,task,RN-M10-07,address,HIDE,
+CH-FUN-140,task,RN-M10-07,phone,HIDE,
+CH-FUN-145,task,RN-Y3-01,action_summary,REPLACE,故人名義の土地・建物の相続登記を法務局に申請してください。固定資産評価証明書はお住まいの市区町村役場で取得できます。
+CH-FUN-146,task,RN-Y3-01,destination,REPLACE,最寄りの法務局
+CH-FUN-147,task,RN-Y3-01,steps_detail,REPLACE,1. 固定資産評価証明書を市区町村役場で取得してください。 2. 登記申請書を作成します（法務局のWebサイトに記載例があります）。 3. 必要書類と登録免許税（評価額×0.4%）を計算してください。 4. 最寄りの法務局に申請します（窓口または郵送が可能です）。 5. 登記識別情報通知を受け取り、安全な場所に保管してください。
+CH-FUN-148,task,RN-Y3-01,address,HIDE,
+CH-FUN-149,task,RN-Y3-01,phone,HIDE,

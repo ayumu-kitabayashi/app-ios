@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>ReliefNote 北竜町実証 KPI ダッシュボード</title>
+<style>
+    :root {
+        --bg: #F5F4F1;
+        --card: #FFFFFF;
+        --border: #E5E3E0;
+        --border-light: #ECEAE7;
+        --text: #333333;
+        --text-sub: #7A7A7A;
+        --accent: #3A3F32;
+        --accent-light: rgba(58, 63, 50, 0.08);
+        --positive: #6FA46F;
+        --neutral: #C79355;
+        --warn: #C76D56;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    header {
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    .header-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        flex: 1;
+    }
+    .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .controls select, .controls button {
+        height: 36px;
+        padding: 0 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--text);
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+    }
+    .controls button.primary {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+    .controls button:active { opacity: 0.8; }
+    main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+    }
+    .updated {
+        font-size: 12px;
+        color: var(--text-sub);
+        margin-bottom: 16px;
+    }
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+    }
+    .stat-label {
+        font-size: 12px;
+        color: var(--text-sub);
+        margin-bottom: 4px;
+    }
+    .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--accent);
+    }
+    .stat-sub {
+        font-size: 11px;
+        color: var(--text-sub);
+        margin-top: 2px;
+    }
+    section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    section h2 {
+        margin: 0 0 12px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    section h2::before {
+        content: '';
+        width: 3px;
+        height: 14px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .section-desc {
+        font-size: 12px;
+        color: var(--text-sub);
+        margin: -4px 0 12px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+    th, td {
+        padding: 8px 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-light);
+    }
+    th {
+        background: #FAFAF9;
+        font-weight: 600;
+        color: var(--text-sub);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.bar-cell { padding: 4px 10px; }
+    .bar {
+        display: inline-block;
+        height: 10px;
+        background: var(--accent);
+        border-radius: 2px;
+        vertical-align: middle;
+        min-width: 1px;
+    }
+    .bar.warn { background: var(--warn); }
+    .bar.positive { background: var(--positive); }
+    .bar.neutral { background: var(--neutral); }
+    .bar-label {
+        display: inline-block;
+        font-size: 11px;
+        color: var(--text-sub);
+        margin-left: 6px;
+        vertical-align: middle;
+    }
+    .empty {
+        padding: 24px;
+        text-align: center;
+        color: var(--text-sub);
+        font-size: 13px;
+    }
+    .error {
+        background: #FEEDEA;
+        border: 1px solid var(--warn);
+        color: var(--warn);
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+    .rating-positive { color: var(--positive); font-weight: 600; }
+    .rating-neutral  { color: var(--neutral);  font-weight: 600; }
+    .rating-improve  { color: var(--warn);     font-weight: 600; }
+    code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 11px;
+        background: var(--accent-light);
+        padding: 1px 6px;
+        border-radius: 3px;
+        color: var(--text);
+    }
+    .loading {
+        display: inline-block;
+        width: 14px; height: 14px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <h1>ReliefNote 北竜町実証 KPI</h1>
+        <div class="controls">
+            <select id="rangeSelect">
+                <option value="7">直近 7 日</option>
+                <option value="14" selected>直近 14 日</option>
+                <option value="30">直近 30 日</option>
+                <option value="90">直近 90 日</option>
+            </select>
+            <button class="primary" onclick="loadAll()">更新</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="updated" id="updatedAt"></div>
+    <div id="errorBox" style="display:none;"></div>
+
+    <div class="summary-grid" id="summaryGrid"></div>
+
+    <section>
+        <h2>個別利用者一覧</h2>
+        <p class="section-desc">アプリ起動時にユーザーが入力した表示名と、その方の利用状況。名前未入力 / ゲストの場合は user_id 末尾4桁。</p>
+        <div id="userTable"></div>
+    </section>
+
+    <section>
+        <h2>日次推移</h2>
+        <p class="section-desc">DAU = ユニーク端末数 / セッション = アプリ起動数</p>
+        <div id="dailyTable"></div>
+    </section>
+
+    <section>
+        <h2>画面ファネル (上位 20)</h2>
+        <p class="section-desc">どの画面から次の画面へ遷移しているか。詰まりポイント特定用。</p>
+        <div id="funnelTable"></div>
+    </section>
+
+    <section>
+        <h2>タスク完了状況</h2>
+        <p class="section-desc">どの手続きが完了されているか / 諦められているか</p>
+        <div id="taskTable"></div>
+    </section>
+
+    <section>
+        <h2>リテンション (アクティブ日数別ユーザー数)</h2>
+        <p class="section-desc">何日間アプリを使い続けているか</p>
+        <div id="retentionTable"></div>
+    </section>
+
+    <section>
+        <h2>セッション滞在時間</h2>
+        <p class="section-desc">日次の平均/中央値/90パーセンタイル (秒)</p>
+        <div id="sessionTable"></div>
+    </section>
+
+    <section>
+        <h2>使い心地レビュー</h2>
+        <p class="section-desc">25%マイルストーン到達後に表示されるレビューカードの集計</p>
+        <div id="feedbackTable"></div>
+    </section>
+</main>
+
+<script>
+    const SUPABASE_URL = 'https://yxsjqsxjjugvwkxpkypn.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4c2pxc3hqanVndndreHBreXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTMxMzQsImV4cCI6MjA4OTEyOTEzNH0.vjrRMcjZZThjHY5P3zlz1uJJ0Y2awHqyI1h1AFvO2jk';
+
+    function esc(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    async function fetchView(path) {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+            }
+        });
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(res.status + ': ' + text.slice(0, 200));
+        }
+        return res.json();
+    }
+
+    function showError(msg) {
+        const box = document.getElementById('errorBox');
+        box.className = 'error';
+        box.style.display = 'block';
+        box.innerHTML = 'データ取得エラー: ' + esc(msg) + '<br><small>migration 007/008 が Supabase に適用済みか確認してください。</small>';
+    }
+
+    function hideError() {
+        document.getElementById('errorBox').style.display = 'none';
+    }
+
+    function loadingHTML() {
+        return '<div class="empty"><span class="loading"></span> 読み込み中...</div>';
+    }
+
+    function emptyHTML(msg) {
+        return '<div class="empty">' + esc(msg || 'データがありません') + '</div>';
+    }
+
+    async function loadSummary(days) {
+        try {
+            const rows = await fetchView('v_hokuryu_daily?order=jst_date.desc&limit=' + days);
+            let totalDau = 0, maxDau = 0, sessions = 0, tasks = 0, grief = 0, alerts = 0;
+            const seenUsers = new Set();
+            rows.forEach(r => {
+                totalDau += r.dau || 0;
+                maxDau = Math.max(maxDau, r.dau || 0);
+                sessions += r.sessions || 0;
+                tasks += r.tasks_done || 0;
+                grief += r.grief_logs || 0;
+                alerts += r.grief_alerts || 0;
+            });
+            const avgDau = rows.length > 0 ? Math.round(totalDau / rows.length) : 0;
+            document.getElementById('summaryGrid').innerHTML = [
+                ['DAU 平均', avgDau, '直近 ' + days + ' 日'],
+                ['DAU ピーク', maxDau, '最大同時利用'],
+                ['セッション総数', sessions, ''],
+                ['タスク完了総数', tasks, ''],
+                ['グリーフ記録総数', grief, ''],
+                ['グリーフアラート', alerts, '保健師通知']
+            ].map(([label, val, sub]) => `
+                <div class="stat-card">
+                    <div class="stat-label">${esc(label)}</div>
+                    <div class="stat-value">${esc(val)}</div>
+                    ${sub ? `<div class="stat-sub">${esc(sub)}</div>` : ''}
+                </div>
+            `).join('');
+            return rows;
+        } catch (e) {
+            showError(e.message);
+            return null;
+        }
+    }
+
+    function renderDaily(rows) {
+        const el = document.getElementById('dailyTable');
+        if (!rows || rows.length === 0) { el.innerHTML = emptyHTML(); return; }
+        const html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>日付</th>
+                        <th class="num">DAU</th>
+                        <th class="num">セッション</th>
+                        <th class="num">タスク完了</th>
+                        <th class="num">グリーフ記録</th>
+                        <th class="num">アラート</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows.map(r => `
+                        <tr>
+                            <td><code>${esc(r.jst_date)}</code></td>
+                            <td class="num">${esc(r.dau)}</td>
+                            <td class="num">${esc(r.sessions)}</td>
+                            <td class="num">${esc(r.tasks_done)}</td>
+                            <td class="num">${esc(r.grief_logs)}</td>
+                            <td class="num">${r.grief_alerts > 0 ? `<span class="rating-improve">${esc(r.grief_alerts)}</span>` : esc(r.grief_alerts)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        el.innerHTML = html;
+    }
+
+    async function loadFunnel() {
+        const el = document.getElementById('funnelTable');
+        el.innerHTML = loadingHTML();
+        try {
+            const rows = await fetchView('v_hokuryu_screen_funnel?order=visits.desc&limit=20');
+            if (!rows || rows.length === 0) { el.innerHTML = emptyHTML(); return; }
+            const max = Math.max(...rows.map(r => r.visits || 0), 1);
+            el.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>遷移元</th>
+                            <th>遷移先</th>
+                            <th class="num">訪問</th>
+                            <th class="num">ユニーク</th>
+                            <th>分布</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => {
+                            const pct = (r.visits / max) * 100;
+                            return `
+                                <tr>
+                                    <td><code>${esc(r.from_screen || '(直接)')}</code></td>
+                                    <td><code>${esc(r.screen_id)}</code></td>
+                                    <td class="num">${esc(r.visits)}</td>
+                                    <td class="num">${esc(r.unique_users)}</td>
+                                    <td class="bar-cell"><span class="bar" style="width:${pct.toFixed(1)}%;"></span></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (e) {
+            el.innerHTML = `<div class="error">${esc(e.message)}</div>`;
+        }
+    }
+
+    async function loadTasks() {
+        const el = document.getElementById('taskTable');
+        el.innerHTML = loadingHTML();
+        try {
+            const rows = await fetchView('v_hokuryu_task_completion?order=completed.desc&limit=30');
+            if (!rows || rows.length === 0) { el.innerHTML = emptyHTML(); return; }
+            el.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>タスク ID</th>
+                            <th class="num">着手</th>
+                            <th class="num">完了</th>
+                            <th class="num">完了者数</th>
+                            <th class="num">完了率</th>
+                            <th>分布</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => {
+                            const rate = r.started > 0 ? Math.round((r.completed / r.started) * 100) : 0;
+                            const cls = rate >= 80 ? 'positive' : rate >= 50 ? 'neutral' : 'warn';
+                            return `
+                                <tr>
+                                    <td><code>${esc(r.task_id)}</code></td>
+                                    <td class="num">${esc(r.started)}</td>
+                                    <td class="num">${esc(r.completed)}</td>
+                                    <td class="num">${esc(r.unique_completers)}</td>
+                                    <td class="num">${rate}%</td>
+                                    <td class="bar-cell"><span class="bar ${cls}" style="width:${rate}%;"></span></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (e) {
+            el.innerHTML = `<div class="error">${esc(e.message)}</div>`;
+        }
+    }
+
+    async function loadRetention() {
+        const el = document.getElementById('retentionTable');
+        el.innerHTML = loadingHTML();
+        try {
+            const rows = await fetchView('v_hokuryu_user_retention?order=active_days.desc&limit=200');
+            if (!rows || rows.length === 0) { el.innerHTML = emptyHTML(); return; }
+            // active_days のヒストグラム
+            const buckets = { '1日のみ': 0, '2-3日': 0, '4-7日': 0, '8-14日': 0, '15-30日': 0, '31日以上': 0 };
+            rows.forEach(r => {
+                const d = r.active_days || 0;
+                if (d <= 1) buckets['1日のみ']++;
+                else if (d <= 3) buckets['2-3日']++;
+                else if (d <= 7) buckets['4-7日']++;
+                else if (d <= 14) buckets['8-14日']++;
+                else if (d <= 30) buckets['15-30日']++;
+                else buckets['31日以上']++;
+            });
+            const total = rows.length;
+            const max = Math.max(...Object.values(buckets), 1);
+            el.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>アクティブ日数</th>
+                            <th class="num">人数</th>
+                            <th class="num">割合</th>
+                            <th>分布</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Object.entries(buckets).map(([label, count]) => {
+                            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                            const barPct = (count / max) * 100;
+                            return `
+                                <tr>
+                                    <td>${esc(label)}</td>
+                                    <td class="num">${count}</td>
+                                    <td class="num">${pct}%</td>
+                                    <td class="bar-cell"><span class="bar" style="width:${barPct.toFixed(1)}%;"></span></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+                <div class="stat-sub" style="margin-top:8px;">合計ユーザー数: ${total}</div>
+            `;
+        } catch (e) {
+            el.innerHTML = `<div class="error">${esc(e.message)}</div>`;
+        }
+    }
+
+    async function loadSession(days) {
+        const el = document.getElementById('sessionTable');
+        el.innerHTML = loadingHTML();
+        try {
+            const rows = await fetchView('v_hokuryu_session_duration?order=jst_date.desc&limit=' + days);
+            if (!rows || rows.length === 0) { el.innerHTML = emptyHTML(); return; }
+            el.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th class="num">セッション数</th>
+                            <th class="num">平均 (秒)</th>
+                            <th class="num">中央値 (P50)</th>
+                            <th class="num">P90</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => `
+                            <tr>
+                                <td><code>${esc(r.jst_date)}</code></td>
+                                <td class="num">${esc(r.sessions)}</td>
+                                <td class="num">${esc(r.avg_sec)}</td>
+                                <td class="num">${esc(Math.round(r.p50_sec || 0))}</td>
+                                <td class="num">${esc(Math.round(r.p90_sec || 0))}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (e) {
+            el.innerHTML = `<div class="error">${esc(e.message)}</div>`;
+        }
+    }
+
+    async function loadFeedback(days) {
+        const el = document.getElementById('feedbackTable');
+        el.innerHTML = loadingHTML();
+        try {
+            const rows = await fetchView('v_hokuryu_feedback?order=jst_date.desc&limit=' + (days * 3));
+            if (!rows || rows.length === 0) { el.innerHTML = emptyHTML(); return; }
+            // 集計サマリ
+            const totals = { positive: 0, neutral: 0, needs_improvement: 0 };
+            rows.forEach(r => { if (totals[r.rating] !== undefined) totals[r.rating] += r.n; });
+            const grand = totals.positive + totals.neutral + totals.needs_improvement;
+            const summary = grand > 0 ? `
+                <div class="summary-grid" style="margin-bottom:16px;">
+                    <div class="stat-card"><div class="stat-label">とても助かっている</div><div class="stat-value rating-positive">${totals.positive}</div><div class="stat-sub">${Math.round(totals.positive / grand * 100)}%</div></div>
+                    <div class="stat-card"><div class="stat-label">ふつう</div><div class="stat-value rating-neutral">${totals.neutral}</div><div class="stat-sub">${Math.round(totals.neutral / grand * 100)}%</div></div>
+                    <div class="stat-card"><div class="stat-label">改善してほしい</div><div class="stat-value rating-improve">${totals.needs_improvement}</div><div class="stat-sub">${Math.round(totals.needs_improvement / grand * 100)}%</div></div>
+                </div>
+            ` : '';
+            const ratingLabel = r => ({ positive: 'とても助かっている', neutral: 'ふつう', needs_improvement: '改善してほしい' })[r] || r;
+            const ratingClass = r => ({ positive: 'rating-positive', neutral: 'rating-neutral', needs_improvement: 'rating-improve' })[r] || '';
+            el.innerHTML = summary + `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>評価</th>
+                            <th class="num">件数</th>
+                            <th class="num">平均完了率</th>
+                            <th class="num">平均経過日数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => `
+                            <tr>
+                                <td><code>${esc(r.jst_date)}</code></td>
+                                <td class="${ratingClass(r.rating)}">${esc(ratingLabel(r.rating))}</td>
+                                <td class="num">${esc(r.n)}</td>
+                                <td class="num">${esc(r.avg_pct)}%</td>
+                                <td class="num">${esc(r.avg_dsd != null ? r.avg_dsd + '日' : '-')}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (e) {
+            el.innerHTML = `<div class="error">${esc(e.message)}</div>`;
+        }
+    }
+
+    async function loadUsers(days) {
+        const el = document.getElementById('userTable');
+        el.innerHTML = loadingHTML();
+        try {
+            const since = new Date(Date.now() - days * 86400000).toISOString();
+            const url = '/rest/v1/event_logs'
+                + '?select=user_id,event_type,event_data,created_at'
+                + '&event_data->>channel=eq.hokuryu'
+                + '&created_at=gte.' + encodeURIComponent(since)
+                + '&order=created_at.asc&limit=10000';
+            const rows = await fetchView(url.replace(/^\/rest\/v1\//, ''));
+            if (!rows || rows.length === 0) { el.innerHTML = emptyHTML(); return; }
+            // user_id ごとに集計
+            const byUser = new Map();
+            for (const r of rows) {
+                const uid = r.user_id;
+                if (!uid) continue;
+                if (!byUser.has(uid)) {
+                    byUser.set(uid, {
+                        user_id: uid,
+                        name: '',
+                        nameAt: '',
+                        firstSeen: r.created_at,
+                        lastSeen: r.created_at,
+                        events: 0,
+                        tasks: 0,
+                        grief: 0,
+                        sessions: 0
+                    });
+                }
+                const u = byUser.get(uid);
+                u.events += 1;
+                if (r.created_at < u.firstSeen) u.firstSeen = r.created_at;
+                if (r.created_at > u.lastSeen) u.lastSeen = r.created_at;
+                if (r.event_type === 'task_completed') u.tasks += 1;
+                if (r.event_type === 'grief_log_saved') u.grief += 1;
+                if (r.event_type === 'session_start') u.sessions += 1;
+                const nm = r.event_data && typeof r.event_data.user_name === 'string'
+                    ? r.event_data.user_name.trim() : '';
+                if (nm && r.created_at >= u.nameAt) {
+                    u.name = nm;
+                    u.nameAt = r.created_at;
+                }
+            }
+            const users = Array.from(byUser.values())
+                .sort((a, b) => (a.lastSeen < b.lastSeen ? 1 : -1));
+            const fmtDate = iso => {
+                const d = new Date(iso);
+                if (isNaN(d.getTime())) return '—';
+                return d.getFullYear() + '-'
+                    + String(d.getMonth()+1).padStart(2,'0') + '-'
+                    + String(d.getDate()).padStart(2,'0');
+            };
+            el.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>表示名</th>
+                            <th>初回利用</th>
+                            <th>最終利用</th>
+                            <th class="num">イベント</th>
+                            <th class="num">セッション</th>
+                            <th class="num">タスク完了</th>
+                            <th class="num">グリーフ記録</th>
+                            <th>user_id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(u => `
+                            <tr>
+                                <td>${u.name
+                                    ? `<strong>${esc(u.name)}様</strong>`
+                                    : `<span style="color:var(--text-sub);">…${esc(String(u.user_id).slice(-4))}（名前未入力）</span>`}</td>
+                                <td><code>${esc(fmtDate(u.firstSeen))}</code></td>
+                                <td><code>${esc(fmtDate(u.lastSeen))}</code></td>
+                                <td class="num">${u.events}</td>
+                                <td class="num">${u.sessions}</td>
+                                <td class="num">${u.tasks}</td>
+                                <td class="num">${u.grief > 0 ? `<span class="rating-improve">${u.grief}</span>` : u.grief}</td>
+                                <td><code style="font-size:11px;color:var(--text-sub);">${esc(u.user_id)}</code></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div class="stat-sub" style="margin-top:8px;">合計 ${users.length} 名 / 直近 ${days} 日</div>
+            `;
+        } catch (e) {
+            el.innerHTML = `<div class="error">${esc(e.message)}</div>`;
+        }
+    }
+
+    async function loadAll() {
+        hideError();
+        const days = parseInt(document.getElementById('rangeSelect').value, 10) || 14;
+        document.getElementById('updatedAt').textContent = '読み込み中...';
+        document.getElementById('summaryGrid').innerHTML = loadingHTML();
+        document.getElementById('dailyTable').innerHTML = loadingHTML();
+
+        const dailyRows = await loadSummary(days);
+        renderDaily(dailyRows);
+        await Promise.all([
+            loadUsers(days),
+            loadFunnel(),
+            loadTasks(),
+            loadRetention(),
+            loadSession(days),
+            loadFeedback(days)
+        ]);
+
+        const now = new Date();
+        document.getElementById('updatedAt').textContent =
+            '最終更新: ' + now.toLocaleString('ja-JP') + ' (期間: 直近 ' + days + ' 日)';
+    }
+
+    document.getElementById('rangeSelect').addEventListener('change', loadAll);
+    window.addEventListener('load', loadAll);
+</script>
+
+</body>
+</html>

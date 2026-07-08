@@ -1,0 +1,46 @@
+# Codemagic CI/CD — ReliefNote (Capacitor iOS)
+# クラウドで .ipa をビルドし App Store Connect / TestFlight へ提出する。手元 Xcode 不要。
+# 事前に Codemagic UI で App Store Connect API キーを「integration」として登録し、
+# 下の <ASC_KEY_NAME> をその名前に置き換える。
+workflows:
+  ios-reliefnote:
+    name: ReliefNote iOS (Capacitor)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: <ASC_KEY_NAME>
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.reliefnote.app
+      vars:
+        XCODE_PROJECT: "ios/App/App.xcodeproj"
+        XCODE_SCHEME: "App"
+      node: 20
+      xcode: latest
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+      - name: Build web assets & sync Capacitor
+        script: |
+          npm run build:www
+          npx cap sync ios
+      - name: Set build number
+        script: |
+          cd ios/App
+          agvtool new-version -all "$PROJECT_BUILD_NUMBER"
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles
+      - name: Build ipa
+        script: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

@@ -1,0 +1,4830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<title>ReliefNote コンソール — 葬儀社向けアフターケア基盤</title>
+<style>
+:root {
+    --bg: #F4F2EE;
+    --surface: #FFFFFF;
+    --surface-warm: #FAF8F4;
+    --border: #E5E1DA;
+    --border-light: #EFECE6;
+    --border-soft: #F4F1EB;
+
+    --ink: #1A1A18;
+    --ink-2: #3A3A36;
+    --ink-3: #6E6B64;
+    --ink-mute: #9B978E;
+
+    --brand: #2F3528;
+    --brand-2: #4B5141;
+    --brand-tint: #EAEBE5;
+    --brand-tint-2: #F4F5F0;
+
+    --gold: #9B7B3E;
+    --gold-2: #BB9A57;
+    --gold-tint: #F8F1E2;
+    --gold-tint-2: #FCF8EE;
+
+    --positive: #5C8B5C;
+    --positive-tint: #E8F0E5;
+    --neutral: #B07F3D;
+    --neutral-tint: #FAF1DE;
+    --warn: #B85740;
+    --warn-tint: #FBE9E2;
+    --alert: #A93525;
+    --alert-tint: #FBE3DC;
+
+    --shadow-sm: 0 1px 2px rgba(20,20,18,0.04);
+    --shadow: 0 1px 3px rgba(20,20,18,0.06), 0 4px 12px rgba(20,20,18,0.04);
+    --shadow-lift: 0 6px 20px rgba(20,20,18,0.08);
+
+    --radius: 14px;
+    --radius-lg: 18px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    font-feature-settings: "palt" 1;
+    -webkit-font-smoothing: antialiased;
+}
+code, .mono {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-feature-settings: normal;
+}
+
+/* ============================================================
+   Top brand bar
+   ============================================================ */
+.brand-bar {
+    background: var(--brand);
+    color: rgba(255,255,255,0.92);
+    padding: 8px 20px;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+}
+.brand-bar-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.brand-bar .pulse {
+    width: 6px; height: 6px;
+    background: var(--gold-2);
+    border-radius: 50%;
+    animation: pulse 1.6s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(187, 154, 87, 0.5);
+}
+@keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(187, 154, 87, 0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(187, 154, 87, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(187, 154, 87, 0); }
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: saturate(180%) blur(8px);
+}
+.header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+.brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 240px;
+}
+.brand-mark .seal {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--surface-warm);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+.brand-mark .seal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 2px;
+}
+.brand-mark .name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+}
+.brand-mark .sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 1px;
+}
+.org-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--surface-warm);
+    border: 1px solid transparent;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-family: inherit;
+    max-width: 220px;
+    transition: all 0.15s;
+}
+.org-name:hover { border-color: var(--border); }
+.org-name:focus { outline: none; border-color: var(--brand-2); background: white; }
+.controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.controls select, .controls button {
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.controls select:hover, .controls button:hover { border-color: var(--brand-2); }
+.controls button.primary {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+}
+.controls button.primary:hover { background: var(--brand-2); }
+.channel-select {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    background: var(--brand-tint);
+    border-color: var(--brand-tint);
+    color: var(--brand);
+    height: 32px;
+}
+
+/* ============================================================
+   Section nav (sticky pill row)
+   ============================================================ */
+.section-nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 20px;
+    position: sticky;
+    top: 73px;
+    z-index: 40;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.section-nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+}
+.section-nav a {
+    font-size: 12px;
+    color: var(--ink-3);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.15s;
+}
+.section-nav a:hover { background: var(--surface-warm); color: var(--ink); }
+
+/* ============================================================
+   Main
+   ============================================================ */
+main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+}
+.meta-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.meta-bar .updated {
+    font-size: 12px;
+    color: var(--ink-3);
+}
+.conn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+}
+.conn::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+}
+.conn.ok { background: var(--positive-tint); color: var(--positive); }
+.conn.ok::before { background: var(--positive); }
+.conn.err { background: var(--alert-tint); color: var(--alert); }
+.conn.err::before { background: var(--alert); }
+.conn.loading { background: var(--brand-tint); color: var(--brand); }
+.conn.loading::before { background: var(--brand-2); animation: pulse 1.2s infinite; }
+
+#errorBox {
+    background: var(--alert-tint);
+    border: 1px solid var(--alert);
+    color: var(--alert);
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+/* ============================================================
+   Hero: 今週やるべきこと
+   ============================================================ */
+.hero {
+    background: linear-gradient(135deg, #FCF8EE 0%, #FFFFFF 65%);
+    border: 1px solid var(--gold-2);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+}
+.hero-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.hero h1 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.hero h1::before {
+    content: '';
+    width: 22px; height: 22px;
+    background: var(--gold);
+    color: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+}
+.hero h1 .icon-star {
+    width: 22px; height: 22px;
+    margin-right: -2px;
+}
+.hero .head-meta {
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.action-list {
+    display: grid;
+    gap: 10px;
+}
+.action-item {
+    display: grid;
+    grid-template-columns: 38px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: all 0.15s;
+}
+.action-item:hover { border-color: var(--gold-2); box-shadow: var(--shadow-sm); }
+.action-item.done { opacity: 0.5; background: var(--surface-warm); }
+.action-item.done .action-body { text-decoration: line-through; text-decoration-color: var(--ink-mute); }
+.action-rank {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--brand-tint);
+    color: var(--brand);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 14px;
+}
+.action-item.urgent .action-rank { background: var(--alert-tint); color: var(--alert); }
+.action-item.warn .action-rank { background: var(--neutral-tint); color: var(--neutral); }
+.action-item.gold .action-rank { background: var(--gold-tint); color: var(--gold); }
+.action-body .target {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 1px;
+}
+.action-body .reason {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    line-height: 1.5;
+}
+.action-body .reason strong { color: var(--ink); }
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.btn-action {
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--brand);
+    background: var(--brand);
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+.btn-action:hover { background: var(--brand-2); }
+.btn-action.ghost {
+    background: transparent;
+    color: var(--brand);
+}
+.btn-action.ghost:hover { background: var(--brand-tint); }
+.btn-action.alert { background: var(--alert); border-color: var(--alert); }
+.btn-action.alert:hover { opacity: 0.9; }
+
+/* ============================================================
+   ROI banner
+   ============================================================ */
+.roi-banner {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+.roi-banner::after {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 60%; height: 200%;
+    background: radial-gradient(ellipse, rgba(187,154,87,0.18) 0%, transparent 60%);
+    pointer-events: none;
+}
+.roi-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: relative;
+}
+.roi-head .label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--gold-2);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.roi-head h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+.roi-head .scope {
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
+    font-family: ui-monospace, Menlo, monospace;
+}
+.roi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+    position: relative;
+}
+.roi-cell {
+    border-left: 2px solid rgba(255,255,255,0.18);
+    padding-left: 14px;
+}
+.roi-cell .roi-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+}
+.roi-cell .roi-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+}
+.roi-cell .roi-value .currency {
+    font-size: 18px;
+    color: var(--gold-2);
+    margin-right: 2px;
+    font-weight: 600;
+}
+.roi-cell .roi-value .unit {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    margin-left: 4px;
+}
+.roi-cell .roi-detail {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+    line-height: 1.5;
+}
+.roi-summary {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 16px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: relative;
+}
+.roi-summary .total-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+}
+.roi-summary .total-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--gold-2);
+    font-variant-numeric: tabular-nums;
+}
+.roi-summary .total-value .currency {
+    font-size: 22px;
+    margin-right: 2px;
+}
+.roi-summary .multiplier {
+    font-size: 13px;
+    color: white;
+    background: rgba(187,154,87,0.18);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(187,154,87,0.4);
+}
+.roi-summary .multiplier strong {
+    color: var(--gold-2);
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   Sections
+   ============================================================ */
+section.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+.panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.panel h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.panel h2::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--brand);
+    border-radius: 2px;
+}
+.panel.alert-panel h2 { color: var(--alert); }
+.panel.alert-panel h2::before { background: var(--alert); }
+.panel.alert-panel { border-color: var(--alert); border-left: 4px solid var(--alert); background: linear-gradient(180deg, var(--alert-tint) 0%, white 8%); }
+
+.panel-meta {
+    font-size: 11px;
+    color: var(--ink-3);
+    font-family: ui-monospace, Menlo, monospace;
+}
+.panel .desc {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin: 4px 0 14px;
+}
+
+.section-divider {
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin: 10px 4px 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   Impact cards (MERIT)
+   ============================================================ */
+.impact-section {
+    background: linear-gradient(135deg, var(--gold-tint-2) 0%, white 80%);
+    border: 1px solid var(--gold-2);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+.impact-section h2 {
+    color: var(--gold);
+}
+.impact-section h2::before { background: var(--gold); }
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.impact-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+    transition: all 0.15s;
+}
+.impact-card:hover { border-color: var(--gold-2); box-shadow: var(--shadow-sm); }
+.impact-card::before {
+    content: 'MERIT';
+    position: absolute;
+    top: 12px; right: 14px;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    background: var(--gold-tint);
+    padding: 2px 7px;
+    border-radius: 3px;
+}
+.impact-card .ic-label {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+    padding-right: 56px;
+    font-weight: 500;
+}
+.impact-card .ic-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+}
+.impact-card .ic-unit {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-3);
+    margin-left: 3px;
+}
+.impact-card .ic-detail {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 8px;
+    line-height: 1.55;
+}
+.impact-card .ic-formula {
+    font-size: 9.5px;
+    color: var(--ink-mute);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-light);
+    font-family: ui-monospace, Menlo, monospace;
+    word-break: break-all;
+}
+
+/* ============================================================
+   Operational stat cards
+   ============================================================ */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    position: relative;
+    transition: all 0.15s;
+}
+.stat-card:hover { border-color: var(--brand-2); }
+.stat-card.alert-stat {
+    border-color: var(--alert);
+    background: linear-gradient(180deg, var(--alert-tint) 0%, white 60%);
+}
+.stat-card .stat-label {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+}
+.stat-card .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+}
+.stat-card.alert-stat .stat-value { color: var(--alert); }
+.stat-card .stat-unit {
+    font-size: 13px;
+    color: var(--ink-3);
+    font-weight: 500;
+    margin-left: 2px;
+}
+.stat-card .stat-sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 4px;
+}
+.stat-card .stat-source {
+    position: absolute;
+    bottom: 6px; right: 10px;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 9px;
+    color: var(--ink-mute);
+    opacity: 0.75;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+th, td {
+    padding: 11px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+}
+th {
+    background: var(--surface-warm);
+    font-weight: 600;
+    color: var(--ink-3);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+tbody tr:hover { background: var(--surface-warm); }
+tbody tr.clickable { cursor: pointer; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.uid {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 12px;
+    background: var(--brand-tint);
+    color: var(--brand);
+    padding: 3px 7px;
+    border-radius: 4px;
+}
+.uid:hover { background: var(--brand-tint-2); }
+
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 10px;
+    letter-spacing: 0.02em;
+}
+.badge.positive { background: var(--positive-tint); color: var(--positive); }
+.badge.neutral { background: var(--neutral-tint); color: var(--neutral); }
+.badge.warn { background: var(--warn-tint); color: var(--warn); }
+.badge.alert { background: var(--alert-tint); color: var(--alert); }
+.badge.gold { background: var(--gold-tint); color: var(--gold); }
+.badge.muted { background: var(--brand-tint); color: var(--brand-2); }
+
+.progress {
+    position: relative;
+    background: var(--border-light);
+    height: 7px;
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 80px;
+}
+.progress-fill {
+    height: 100%;
+    background: var(--brand);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.progress-fill.positive { background: var(--positive); }
+.progress-fill.warn { background: var(--warn); }
+.progress-fill.gold { background: var(--gold); }
+.progress-row {
+    display: flex; align-items: center; gap: 8px;
+}
+.progress-num {
+    font-size: 11px; color: var(--ink-3);
+    min-width: 56px; text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   Two-column / multi-column grids
+   ============================================================ */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+
+/* ============================================================
+   Phase distribution chart (custom SVG)
+   ============================================================ */
+.phase-chart {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+}
+.phase-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 60px;
+    gap: 10px;
+    align-items: center;
+}
+.phase-row .ph-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-2);
+}
+.phase-row .ph-label small {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-left: 4px;
+}
+.phase-row .ph-bar {
+    background: var(--border-light);
+    height: 18px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+.phase-row .ph-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-2) 0%, var(--brand) 100%);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.phase-row .ph-fill.gold { background: linear-gradient(90deg, var(--gold-2) 0%, var(--gold) 100%); }
+.phase-row .ph-count {
+    font-size: 12px;
+    color: var(--ink-2);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+/* ============================================================
+   Heatmap
+   ============================================================ */
+.heatmap {
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    gap: 3px;
+    margin-top: 8px;
+}
+.heat-cell {
+    aspect-ratio: 1;
+    background: var(--border-light);
+    border-radius: 2px;
+    transition: all 0.15s;
+}
+.heat-cell.l1 { background: #E5DEC8; }
+.heat-cell.l2 { background: #D9C895; }
+.heat-cell.l3 { background: var(--gold-2); }
+.heat-cell.l4 { background: var(--gold); }
+.heat-cell:hover { transform: scale(1.4); z-index: 1; }
+
+/* ============================================================
+   Forecast cards
+   ============================================================ */
+.forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+.forecast-card {
+    background: var(--surface-warm);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+.forecast-card .fc-when {
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.forecast-card .fc-count {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+    margin: 2px 0;
+}
+.forecast-card .fc-detail {
+    font-size: 11px;
+    color: var(--ink-3);
+}
+
+/* ============================================================
+   Memorial cards
+   ============================================================ */
+.memorial-card {
+    background: var(--surface-warm);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.memorial-card.imminent {
+    background: linear-gradient(135deg, var(--gold-tint-2), white);
+    border-color: var(--gold-2);
+}
+.memorial-date {
+    text-align: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    min-width: 56px;
+}
+.memorial-card.imminent .memorial-date {
+    border-color: var(--gold-2);
+    color: var(--gold);
+}
+.memorial-date .month {
+    font-size: 10px; color: var(--ink-3); font-weight: 600;
+}
+.memorial-date .day {
+    font-size: 22px; font-weight: 700; line-height: 1.1;
+}
+.memorial-info { flex: 1; min-width: 0; }
+.memorial-info .title { font-size: 13px; font-weight: 600; }
+.memorial-info .sub { font-size: 11px; color: var(--ink-3); }
+
+/* ============================================================
+   Trend bars
+   ============================================================ */
+.trend-wrap {
+    margin-top: 12px;
+    background: var(--surface-warm);
+    border-radius: 10px;
+    padding: 16px;
+}
+.trend-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 140px;
+    padding: 18px 0 4px;
+}
+.trend-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+.trend-bar .bar-shape {
+    width: 100%;
+    max-width: 14px;
+    background: var(--brand);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: opacity 0.15s;
+}
+.trend-bar:hover .bar-shape { opacity: 0.85; }
+.trend-bar .bar-shape.alert { background: var(--alert); }
+.trend-bar .bar-shape.gold { background: var(--gold); }
+.trend-bar .bar-val {
+    position: absolute;
+    top: -16px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+}
+.trend-bar .bar-label {
+    font-size: 10px; color: var(--ink-3);
+    font-family: ui-monospace, Menlo, monospace;
+}
+.legend {
+    display: flex; gap: 14px;
+    font-size: 11px; color: var(--ink-3);
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend span::before {
+    content: '';
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    background: var(--brand);
+}
+.legend .lg-alert::before { background: var(--alert); }
+.legend .lg-gold::before { background: var(--gold); }
+
+/* ============================================================
+   Insight box
+   ============================================================ */
+.insight {
+    background: var(--brand-tint-2);
+    border-left: 3px solid var(--brand-2);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--ink-2);
+    border-radius: 0 6px 6px 0;
+    margin-top: 12px;
+    line-height: 1.65;
+}
+.insight.alert { background: var(--alert-tint); border-left-color: var(--alert); }
+.insight.gold { background: var(--gold-tint-2); border-left-color: var(--gold); }
+.insight strong { color: var(--ink); font-weight: 700; }
+
+/* ============================================================
+   Filter chips
+   ============================================================ */
+.filter-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 10px 0 14px;
+}
+.filter-chip {
+    font-size: 12px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: white;
+    cursor: pointer;
+    color: var(--ink-3);
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.filter-chip:hover { border-color: var(--brand-2); }
+.filter-chip.active {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+}
+
+/* ============================================================
+   Feature cards (機能別利用)
+   ============================================================ */
+.feature-card {
+    background: var(--surface-warm);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+.feature-card .label {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+}
+.feature-card .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+}
+.feature-card .source {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 9px;
+    color: var(--ink-mute);
+    margin-top: 6px;
+}
+
+/* ============================================================
+   Category list (タスク完了)
+   ============================================================ */
+.cat-list { list-style: none; padding: 0; margin: 0; }
+.cat-list li {
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cat-list li:last-child { border-bottom: none; }
+.cat-list .cat-name {
+    font-size: 13px;
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+}
+.cat-list .cat-domain {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-left: 6px;
+    font-weight: 400;
+}
+.cat-list .cat-num {
+    font-size: 12px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    min-width: 90px;
+    text-align: right;
+}
+.cat-list .progress { width: 100px; flex-shrink: 0; }
+
+/* ============================================================
+   Empty / loading state
+   ============================================================ */
+.empty-state {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--ink-3);
+    font-size: 13px;
+}
+.empty-state .hint { margin-top: 8px; font-size: 11px; opacity: 0.75; }
+.spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--brand);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   Modal: ご遺族詳細
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 18, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+}
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 900px;
+    width: 100%;
+    box-shadow: var(--shadow-lift);
+    animation: slideUp 0.25s ease;
+    margin: auto;
+}
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal-head {
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.modal-head h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+.modal-head .head-meta {
+    font-size: 12px;
+    color: var(--ink-3);
+}
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: var(--ink-3);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+.modal-body {
+    padding: 22px 28px 28px;
+}
+.modal-section {
+    margin-bottom: 22px;
+}
+.modal-section h4 {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+.detail-stat {
+    background: var(--surface-warm);
+    padding: 10px 12px;
+    border-radius: 8px;
+}
+.detail-stat .label { font-size: 10px; color: var(--ink-3); }
+.detail-stat .value { font-size: 18px; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; }
+
+.timeline {
+    border-left: 2px solid var(--border);
+    padding-left: 18px;
+    margin-left: 6px;
+}
+.timeline-item {
+    position: relative;
+    padding: 8px 0;
+    font-size: 12px;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 14px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--brand-2);
+    border: 2px solid white;
+}
+.timeline-item.alert::before { background: var(--alert); }
+.timeline-item.gold::before { background: var(--gold); }
+.timeline-item .ti-when {
+    color: var(--ink-3);
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px;
+}
+.timeline-item .ti-event {
+    font-weight: 500;
+    color: var(--ink);
+    margin-top: 2px;
+}
+.timeline-item .ti-data {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    font-family: ui-monospace, Menlo, monospace;
+    margin-top: 1px;
+}
+
+/* ============================================================
+   お声がけスクリプト
+   ============================================================ */
+.script-section {
+    background: var(--surface-warm);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+}
+.staff-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    flex-wrap: wrap;
+}
+.staff-input-row label { color: var(--ink-3); }
+.staff-input-row input {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    width: 160px;
+    background: white;
+}
+.staff-input-row input:focus { outline: none; border-color: var(--brand-2); }
+.context-pill {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--ink-3);
+    background: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+}
+.context-pill.alert-ctx { background: var(--alert-tint); color: var(--alert); border-color: var(--alert); }
+.context-pill.gold-ctx { background: var(--gold-tint); color: var(--gold); border-color: var(--gold-2); }
+
+.script-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+.script-tab {
+    background: transparent;
+    border: none;
+    padding: 9px 16px;
+    font-size: 12px;
+    color: var(--ink-3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+.script-tab:hover { color: var(--ink); }
+.script-tab.active {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+    font-weight: 600;
+}
+.script-text {
+    width: 100%;
+    min-height: 200px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--ink);
+    background: white;
+    resize: vertical;
+    font-feature-settings: "palt" 1;
+    transition: border-color 0.15s;
+}
+.script-text:focus { outline: none; border-color: var(--brand-2); }
+.script-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.script-tip {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    font-style: italic;
+    flex: 1;
+    min-width: 200px;
+    line-height: 1.5;
+}
+.script-tip::before { content: '💡 '; font-style: normal; }
+.btn-copy {
+    background: var(--brand);
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+.btn-copy:hover { background: var(--brand-2); }
+.btn-copy.copied { background: var(--positive); }
+.btn-copy.copied::before { content: '✓ '; }
+.script-disclaimer {
+    margin-top: 10px;
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Privacy / Identity layer
+   ============================================================ */
+.privacy-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface-warm);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: var(--ink-3);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.privacy-toggle:hover { border-color: var(--brand-2); }
+.privacy-toggle.on {
+    background: var(--alert-tint);
+    border-color: var(--alert);
+    color: var(--alert);
+    font-weight: 600;
+}
+.privacy-toggle .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink-mute);
+}
+.privacy-toggle.on .dot { background: var(--alert); animation: pulse 1.6s infinite; }
+
+.identity-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    background: var(--surface-warm);
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-top: 8px;
+}
+.identity-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.identity-form input, .identity-form textarea {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    background: white;
+    transition: border-color 0.15s;
+}
+.identity-form input:focus, .identity-form textarea:focus { outline: none; border-color: var(--brand-2); }
+.identity-form textarea { min-height: 50px; resize: vertical; grid-column: 1 / -1; }
+.identity-form .actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+.identity-form .privacy-note {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    flex: 1;
+    line-height: 1.5;
+}
+.identity-form .privacy-note::before { content: '🔒 '; }
+.btn-save {
+    background: var(--brand);
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+}
+.btn-save:hover { background: var(--brand-2); }
+.btn-clear {
+    background: transparent;
+    color: var(--alert);
+    border: 1px solid var(--alert-tint);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+}
+.btn-clear:hover { background: var(--alert-tint); }
+
+.identity-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.identity-display .deceased-name {
+    font-weight: 600;
+    color: var(--ink);
+}
+.identity-display .chief-name {
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.identity-add-link {
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-left: 6px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+.identity-add-link:hover { color: var(--brand); }
+
+.csv-import-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--brand-tint-2);
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 12px;
+    flex-wrap: wrap;
+}
+.csv-import-row label {
+    background: var(--brand);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+}
+.csv-import-row label:hover { background: var(--brand-2); }
+.csv-import-row input[type="file"] { display: none; }
+.csv-import-row .desc {
+    color: var(--ink-3);
+    flex: 1;
+    min-width: 240px;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* 実名管理 クイックリスト */
+.identity-quick-section {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--brand-tint-2);
+}
+.identity-quick-section h4 {
+    font-size: 13px;
+    margin: 0 0 8px;
+    color: var(--ink-2);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.identity-quick-section h4 .count-pill {
+    display: inline-block;
+    background: var(--brand-tint-2);
+    color: var(--brand);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.identity-quick-row {
+    display: grid;
+    grid-template-columns: 90px 110px 1fr 1fr 90px 70px;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--surface-warm);
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+.identity-quick-row.registered { background: var(--brand-tint-2); border-color: var(--brand-tint-2); }
+.identity-quick-row.unregistered { background: #FFF7EE; border-color: #F2E7D6; }
+.identity-quick-row .uid-cell {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.identity-quick-row .meta-cell {
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.identity-quick-row input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid var(--surface-warm);
+    border-radius: 5px;
+    font-size: 12px;
+    background: white;
+    font-family: inherit;
+}
+.identity-quick-row input:focus { outline: none; border-color: var(--brand-2); }
+.identity-quick-row .save-btn {
+    padding: 5px 10px;
+    background: var(--brand);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 500;
+}
+.identity-quick-row .save-btn:hover { background: var(--brand-2); }
+.identity-quick-row .save-btn.saved { background: var(--positive); }
+@media (max-width: 720px) {
+    .identity-quick-row {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 6px;
+    }
+    .identity-quick-row .uid-cell, .identity-quick-row .meta-cell { grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   CRM: フォローアップ
+   ============================================================ */
+.followup-form {
+    background: var(--surface-warm);
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+.followup-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.followup-form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.followup-form-grid select, .followup-form-grid input {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    background: white;
+}
+.followup-form textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    min-height: 70px;
+    resize: vertical;
+    background: white;
+    margin-bottom: 8px;
+}
+.followup-form textarea:focus { outline: none; border-color: var(--brand-2); }
+.followup-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.followup-history {
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+    margin-left: 4px;
+}
+.followup-entry {
+    position: relative;
+    padding: 10px 0;
+    font-size: 12px;
+    border-bottom: 1px dashed var(--border-light);
+}
+.followup-entry:last-child { border-bottom: none; }
+.followup-entry::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 16px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--brand-2);
+    border: 2px solid white;
+}
+.followup-entry.action-call::before { background: var(--positive); }
+.followup-entry.action-email::before { background: var(--neutral); }
+.followup-entry.action-visit::before { background: var(--gold); }
+.followup-entry.action-memo::before { background: var(--ink-mute); }
+
+.followup-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.followup-head .when {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.followup-head .who {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 12px;
+}
+.followup-head .what {
+    font-size: 11px;
+    background: var(--brand-tint);
+    color: var(--brand);
+    padding: 1px 7px;
+    border-radius: 10px;
+}
+.followup-head .what.action-call { background: var(--positive-tint); color: var(--positive); }
+.followup-head .what.action-email { background: var(--neutral-tint); color: var(--neutral); }
+.followup-head .what.action-visit { background: var(--gold-tint); color: var(--gold); }
+.followup-head .what.action-memo { background: var(--brand-tint); color: var(--brand-2); }
+
+.followup-outcome {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 10.5px;
+    padding: 1px 7px;
+    border-radius: 8px;
+}
+.followup-outcome.outcome-completed { background: var(--positive-tint); color: var(--positive); }
+.followup-outcome.outcome-callback_needed { background: var(--neutral-tint); color: var(--neutral); }
+.followup-outcome.outcome-no_response { background: var(--warn-tint); color: var(--warn); }
+.followup-outcome.outcome-rejected { background: var(--alert-tint); color: var(--alert); }
+.followup-outcome.outcome-pending { background: var(--brand-tint); color: var(--brand); }
+
+.followup-note {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    background: var(--surface-warm);
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+/* スタッフ別サマリー */
+.staff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+.staff-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: all 0.15s;
+}
+.staff-card:hover { border-color: var(--brand-2); }
+.staff-card .name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+.staff-card .name::before {
+    content: '👤 ';
+    font-size: 12px;
+    margin-right: 4px;
+}
+.staff-card .stats {
+    display: flex;
+    gap: 14px;
+    margin: 8px 0;
+}
+.staff-card .stat {
+    flex: 1;
+}
+.staff-card .stat .num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+.staff-card .stat .lbl {
+    font-size: 10px;
+    color: var(--ink-3);
+}
+.staff-card .recent {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.5;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-light);
+}
+.staff-card .recent strong { color: var(--ink); }
+
+/* 未対応キュー */
+.queue-list { display: grid; gap: 8px; margin-top: 8px; }
+.queue-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: all 0.15s;
+}
+.queue-item:hover { border-color: var(--brand-2); box-shadow: var(--shadow-sm); cursor: pointer; }
+.queue-item.urgent { border-left: 3px solid var(--alert); }
+.queue-item.warn { border-left: 3px solid var(--neutral); }
+.queue-item.gold { border-left: 3px solid var(--gold); }
+.queue-info .target {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.queue-info .meta {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.5;
+    margin-top: 2px;
+}
+.queue-info .meta strong { color: var(--ink-2); }
+.queue-action {
+    font-size: 11px;
+    background: var(--brand);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+.queue-action:hover { background: var(--brand-2); }
+
+.crm-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    color: var(--ink-3);
+    padding: 3px 8px;
+    background: var(--brand-tint-2);
+    border-radius: 8px;
+}
+.crm-status-pill.connected::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--positive);
+}
+.crm-status-pill.disconnected {
+    background: var(--neutral-tint);
+    color: var(--neutral);
+}
+.crm-status-pill.disconnected::before {
+    content: '⚠ ';
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer {
+    max-width: 1280px;
+    margin: 30px auto 0;
+    padding: 0 20px 30px;
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.7;
+}
+footer code {
+    font-size: 10px;
+    background: var(--brand-tint);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--brand);
+}
+.footer-actions {
+    display: flex;
+    gap: 8px;
+    margin: 14px 0 18px;
+    flex-wrap: wrap;
+}
+.btn-print {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--ink);
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.btn-print:hover { border-color: var(--brand-2); }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 720px) {
+    section.panel, .impact-section, .roi-banner, .hero { padding: 18px 18px; }
+    .stat-card .stat-value, .impact-card .ic-value { font-size: 22px; }
+    .roi-cell .roi-value { font-size: 26px; }
+    .roi-summary .total-value { font-size: 28px; }
+    .heatmap { grid-template-columns: repeat(15, 1fr); }
+    th, td { padding: 8px 6px; font-size: 12px; }
+    .action-item { grid-template-columns: 32px 1fr auto; gap: 10px; padding: 10px 12px; }
+    .modal-body { padding: 18px 18px 22px; }
+    .modal-head { padding: 18px 18px; }
+}
+
+/* ============================================================
+   Phase バッジ / レベル切替 / デモモード
+   ============================================================ */
+.phase-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-left: 10px;
+    vertical-align: middle;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+.phase-badge.phase-1 { background: var(--positive-tint); color: #3F6B3F; }
+.phase-badge.phase-2 { background: var(--neutral-tint); color: #8A5C2A; }
+.phase-badge.phase-3 { background: #ECE7F2; color: #5A4982; }
+.section-nav a .phase-badge {
+    margin-left: 6px;
+    padding: 1px 5px;
+    font-size: 9px;
+}
+
+/* レベル別セクション可視性 */
+body.level-basic [data-level="2"],
+body.level-basic [data-level="3"],
+body.level-advanced [data-level="3"] { display: none !important; }
+body.level-basic .section-nav a[data-level="2"],
+body.level-basic .section-nav a[data-level="3"],
+body.level-advanced .section-nav a[data-level="3"] { display: none !important; }
+
+/* レベルセレクト */
+.level-select {
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.level-select:hover { border-color: var(--brand-2); }
+
+/* デモバナー */
+#demoBanner {
+    background: linear-gradient(90deg, #FAF1DE 0%, #F8F1E2 100%);
+    border-bottom: 1px solid var(--gold-2);
+    color: var(--brand);
+    padding: 10px 20px;
+    font-size: 13px;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+#demoBanner .demo-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 10px;
+    letter-spacing: 0.06em;
+}
+#demoBanner a.demo-exit {
+    margin-left: 12px;
+    color: var(--brand);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* ベースラインバナー（クリア後） */
+#baselineBanner {
+    background: #EFF4F7;
+    border-bottom: 1px solid #C9D5DE;
+    color: #314B5C;
+    padding: 8px 20px;
+    font-size: 13px;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+#baselineBanner .baseline-tag {
+    display: inline-block;
+    background: #314B5C;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 10px;
+    letter-spacing: 0.06em;
+}
+#baselineBanner a.baseline-clear {
+    margin-left: 12px;
+    color: #314B5C;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* 空状態のオンボーディング装飾 */
+.empty-state.guide::before {
+    content: '✨';
+    display: block;
+    font-size: 22px;
+    margin-bottom: 6px;
+    opacity: 0.55;
+}
+
+/* ============================================================
+   Print styles (月次レポート)
+   ============================================================ */
+@media print {
+    body { background: white; color: black; }
+    .brand-bar, .section-nav, header .controls, .footer-actions, .btn-action, .filter-bar, .modal-overlay { display: none !important; }
+    main { padding: 0; max-width: 100%; }
+    section.panel, .impact-section, .roi-banner, .hero {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #DDD;
+        background: white !important;
+        color: black !important;
+    }
+    .roi-banner * { color: black !important; }
+    .roi-cell .roi-value .currency, .roi-summary .total-value { color: var(--gold) !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="demoBanner" style="display:none;">
+    <span class="demo-tag">DEMO</span>ダミーデータで表示中。実データに切り替えるには
+    <a class="demo-exit" onclick="exitDemo()">こちら</a>
+</div>
+
+<div id="baselineBanner" style="display:none;">
+    <span class="baseline-tag">CLEARED</span><span id="baselineBannerText"></span>
+    <a class="baseline-clear" onclick="clearBaseline()">解除</a>
+</div>
+
+<div class="brand-bar">
+    <div class="brand-bar-inner">
+        <span class="pulse"></span>
+        <span><strong>ReliefNote コンソール</strong> — 葬儀社向けアフターケア基盤 / リアルタイム接続</span>
+    </div>
+</div>
+
+<header>
+    <div class="header-inner">
+        <div class="brand-mark">
+            <div class="seal"><img src="logo.png" alt="ReliefNote"></div>
+            <div>
+                <div class="name">ReliefNote コンソール</div>
+                <div class="sub">葬儀社向け アフターケアダッシュボード</div>
+            </div>
+        </div>
+        <input class="org-name" id="orgName" type="text" placeholder="御社名を入力" maxlength="40">
+        <button id="privacyToggle" class="privacy-toggle" onclick="togglePrivacyMode()" title="ご遺族の実名表示を切替（実名情報は端末内 localStorage のみに保存）">
+            <span class="dot"></span>匿名表示
+        </button>
+        <select id="channelSelect" class="channel-select" onchange="render()">
+            <option value="funeral" selected>channel = funeral</option>
+            <option value="hokuryu">channel = hokuryu (プレビュー)</option>
+        </select>
+        <select id="levelSelect" class="level-select" onchange="setLevel(this.value)" title="表示レベル：機能解放のフェーズ別に表示量を切替">
+            <option value="basic">Phase 1 — 基本（5）</option>
+            <option value="advanced">Phase 2 — 拡張（9）</option>
+            <option value="full" selected>Phase 3 — フル（16）</option>
+        </select>
+        <div class="controls">
+            <select id="rangeSelect" onchange="render()">
+                <option value="7">直近 7 日</option>
+                <option value="30" selected>直近 30 日</option>
+                <option value="90">直近 90 日</option>
+                <option value="180">直近 180 日</option>
+            </select>
+            <button class="primary" onclick="render()">更新</button>
+            <button onclick="setBaselineNow()" title="現在のイベントを非表示にし、これ以降のアプリ利用だけを表示します">クリア</button>
+        </div>
+    </div>
+</header>
+
+<nav class="section-nav">
+    <div class="section-nav-inner">
+        <a href="#hero" data-level="1">今週やるべきこと</a>
+        <a href="#roi" data-level="1">ROI / 価値</a>
+        <a href="#queue" data-level="1">未対応キュー</a>
+        <a href="#touchpoints" data-level="1">49日 声がけ候補</a>
+        <a href="#features" data-level="1">機能利用</a>
+        <a href="#alerts" data-level="2">グリーフアラート</a>
+        <a href="#forecast" data-level="2">先読み予測</a>
+        <a href="#distribution" data-level="2">フェーズ分布</a>
+        <a href="#trend" data-level="2">月次推移</a>
+        <a href="#staff" data-level="3">スタッフ別</a>
+        <a href="#impact" data-level="3">導入効果</a>
+        <a href="#families" data-level="3">ご遺族別</a>
+        <a href="#tasks" data-level="3">タスク進捗</a>
+        <a href="#heatmap" data-level="3">グリーフ活動</a>
+        <a href="#memorials" data-level="3">法要・記念日</a>
+        <a href="#identity" data-level="3">実名管理</a>
+    </div>
+</nav>
+
+<main>
+    <div class="meta-bar">
+        <div class="updated" id="updatedAt"></div>
+        <div id="connStatus" class="conn loading">読み込み中…</div>
+    </div>
+    <div id="errorBox" style="display:none;"></div>
+
+    <!-- HERO: 今週やるべきこと -->
+    <section class="hero" id="hero" data-level="1">
+        <div class="hero-head">
+            <h1>今週、御社が動くべきこと<span class="phase-badge phase-1">Phase 1</span></h1>
+            <span class="head-meta">優先度・緊急度で自動ソート / 直近のアプリ行動から自動抽出</span>
+        </div>
+        <div class="action-list" id="actionList"></div>
+    </section>
+
+    <!-- 未対応キュー -->
+    <section class="panel" id="queue" data-level="1">
+        <div class="panel-head">
+            <h2>未対応キュー — フォローアップ漏れ<span class="phase-badge phase-1">Phase 1</span></h2>
+            <span class="panel-meta" id="crmStatus"></span>
+        </div>
+        <p class="desc">アプリで動きがあるご遺族のうち、72時間以内に当社からの対応記録がない方。被り防止と漏れ防止のための優先キュー。</p>
+        <div class="queue-list" id="queueList"></div>
+    </section>
+
+    <!-- スタッフ別 業務サマリー -->
+    <section class="panel" id="staff" data-level="3">
+        <div class="panel-head">
+            <h2>スタッフ別 業務サマリー<span class="phase-badge phase-3">Phase 3</span></h2>
+            <span class="panel-meta">funeral_followups GROUP BY staff_name</span>
+        </div>
+        <p class="desc">期間内の対応件数、担当ご遺族数、直近の活動。複数スタッフ運用での状況把握用。</p>
+        <div class="staff-grid" id="staffGrid"></div>
+    </section>
+
+    <!-- ROI BANNER -->
+    <section class="roi-banner" id="roi" data-level="1">
+        <div class="roi-head">
+            <div>
+                <div class="label">VALUE DELIVERED</div>
+                <h2 id="roiTitle">今月、ReliefNote が御社にもたらした価値<span class="phase-badge phase-1">Phase 1</span></h2>
+            </div>
+            <div class="scope" id="roiScope"></div>
+        </div>
+        <div class="roi-grid" id="roiGrid"></div>
+        <div class="roi-summary">
+            <div>
+                <div class="total-label">月次合計</div>
+                <div class="total-value" id="roiTotal">¥0</div>
+            </div>
+            <div class="multiplier" id="roiMultiplier"></div>
+        </div>
+    </section>
+
+    <!-- 導入効果 (MERIT cards) -->
+    <section class="impact-section" id="impact" data-level="3">
+        <div class="panel-head">
+            <h2>導入効果サマリー<span class="phase-badge phase-3">Phase 3</span></h2>
+            <span class="panel-meta">ご遺族アプリ 実イベントから算出</span>
+        </div>
+        <p class="desc">御社が ReliefNote から得ている定量的価値。すべて event_logs テーブルから直接計算。</p>
+        <div class="impact-grid" id="impactGrid"></div>
+    </section>
+
+    <div class="section-divider" data-level="1">アプリ利用状況（オペレーショナル指標）</div>
+    <div class="stat-grid" id="summaryGrid" data-level="1"></div>
+
+    <!-- グリーフアラート -->
+    <section class="panel alert-panel" id="alerts" data-level="2">
+        <div class="panel-head">
+            <h2>グリーフアラート — 即対応リスト<span class="phase-badge phase-2">Phase 2</span></h2>
+            <span class="panel-meta" id="alertSource"></span>
+        </div>
+        <p class="desc">アプリが自動発火した深刻度アラート。長文ログの連続・ネガティブ表現の増加などを検知。<strong>24時間以内のお声がけが推奨されます。</strong></p>
+        <div id="alertTable"></div>
+        <div class="insight alert" id="alertInsight"></div>
+    </section>
+
+    <!-- 49日前後 + 予測 -->
+    <section class="panel" id="touchpoints" data-level="1">
+        <div class="panel-head">
+            <h2>49日前後 — 仏壇・本位牌・法要のご相談タイミング<span class="phase-badge phase-1">Phase 1</span></h2>
+            <span class="panel-meta">経過 35〜65 日 + 直近7日アクティブ</span>
+        </div>
+        <p class="desc">仏壇・本位牌・法要・お墓のご相談ベストタイミング。準備度・行動シグナルから優先度を判定。</p>
+        <div id="touchpointTable"></div>
+        <div class="insight gold" id="touchpointInsight"></div>
+    </section>
+
+    <section class="panel" id="forecast" data-level="2">
+        <div class="panel-head">
+            <h2>先読み予測 — 今後 30/60/90 日の機会<span class="phase-badge phase-2">Phase 2</span></h2>
+            <span class="panel-meta">first_seen + 49d / 100d / 365d で算出</span>
+        </div>
+        <p class="desc">ご遺族の初回アプリ利用日を起点に、今後到来する四十九日・百ヶ日・一周忌のタイミング数を予測。</p>
+        <div class="forecast-grid" id="forecastGrid"></div>
+    </section>
+
+    <!-- ご遺族別 -->
+    <section class="panel" id="families" data-level="3">
+        <div class="panel-head">
+            <h2>ご遺族別 アクティビティ<span class="phase-badge phase-3">Phase 3</span></h2>
+            <span class="panel-meta">行をクリックで詳細タイムライン</span>
+        </div>
+        <p class="desc">user_id ごとのフェーズ・タスク完了数・最終アクセス。クリックでイベントタイムライン表示。</p>
+        <div class="filter-bar" id="familyFilters"></div>
+        <div id="familyTable"></div>
+    </section>
+
+    <!-- フェーズ分布 + ヒートマップ -->
+    <div class="grid-2">
+        <section class="panel" id="distribution" data-level="2">
+            <div class="panel-head">
+                <h2>フェーズ別 ご遺族分布<span class="phase-badge phase-2">Phase 2</span></h2>
+                <span class="panel-meta">phase_master.csv 準拠</span>
+            </div>
+            <p class="desc">どのフェーズに何名のご遺族が滞在中か。M3（3か月以内）に集中する場合は仏壇相談タイミングが集中している兆候。</p>
+            <div class="phase-chart" id="phaseChart"></div>
+        </section>
+
+        <section class="panel" id="heatmap" data-level="3">
+            <div class="panel-head">
+                <h2>グリーフ活動 — 日次ヒートマップ<span class="phase-badge phase-3">Phase 3</span></h2>
+                <span class="panel-meta">直近30日 grief_log_saved</span>
+            </div>
+            <p class="desc">ご遺族のグリーフ記録活動の濃淡。色の濃い日はご遺族が多く想いを綴った日。</p>
+            <div class="heatmap" id="heatmapGrid"></div>
+            <div class="legend" style="margin-top:10px;">
+                <span style="background:var(--border-light);width:14px;height:14px;border-radius:2px;display:inline-block;"></span><span style="font-size:10px;">少</span>
+                <span style="background:#E5DEC8;width:14px;height:14px;border-radius:2px;display:inline-block;"></span>
+                <span style="background:#D9C895;width:14px;height:14px;border-radius:2px;display:inline-block;"></span>
+                <span style="background:var(--gold-2);width:14px;height:14px;border-radius:2px;display:inline-block;"></span>
+                <span style="background:var(--gold);width:14px;height:14px;border-radius:2px;display:inline-block;"></span><span style="font-size:10px;">多</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- タスク + 法要 -->
+    <div class="grid-2">
+        <section class="panel" id="tasks" data-level="3">
+            <div class="panel-head">
+                <h2>アフター手続き 完了状況<span class="phase-badge phase-3">Phase 3</span></h2>
+                <span class="panel-meta">tasks_master.csv ドメイン別</span>
+            </div>
+            <p class="desc">ご遺族アプリ全 56 タスクのドメイン別完了率。滞留が多い領域は事前相談員フォロー候補。</p>
+            <ul class="cat-list" id="categoryList"></ul>
+        </section>
+
+        <section class="panel" id="memorials" data-level="3">
+            <div class="panel-head">
+                <h2>ご遺族登録の法要・記念日<span class="phase-badge phase-3">Phase 3</span></h2>
+                <span class="panel-meta">event_type='anniv_added'</span>
+            </div>
+            <p class="desc">ご遺族がアプリに登録した命日・法要日。直近30日以内のもの。供物・お参りのご提案機会。</p>
+            <div class="grid-3" id="memorialGrid"></div>
+        </section>
+    </div>
+
+    <!-- 月次推移 -->
+    <section class="panel" id="trend" data-level="2">
+        <div class="panel-head">
+            <h2>月次推移サマリー<span class="phase-badge phase-2">Phase 2</span></h2>
+            <span class="panel-meta">v_funeral_daily 相当</span>
+        </div>
+        <p class="desc">DAU・グリーフアラート発火の月次推移。過去12ヶ月のトレンド。</p>
+        <div class="trend-wrap">
+            <div id="trendChart"></div>
+            <div class="legend">
+                <span>DAU（月内ユニーク）</span>
+                <span class="lg-alert">グリーフアラート発火数</span>
+            </div>
+        </div>
+        <div class="insight" id="trendInsight"></div>
+    </section>
+
+    <!-- 実名管理 -->
+    <section class="panel" id="identity" data-level="3">
+        <div class="panel-head">
+            <h2>ご遺族 実名管理<span class="phase-badge phase-3">Phase 3</span></h2>
+            <span class="panel-meta">localStorage / 端末内のみ</span>
+        </div>
+        <p class="desc">ご遺族がアプリ起動時に自分で入力した表示名は、自動的に各画面で「◯◯様」として表示されます。さらに故人氏名・喪主氏名・連絡先を登録しておくと、「匿名表示」を切替えた時に「故 ◯◯様 / 喪主 ◯◯様」表示に切り替わります。<strong>こちらで登録する情報は Supabase 等クラウドへ送信されず、ご使用の端末内（localStorage）のみに保存されます。</strong></p>
+        <div class="csv-import-row">
+            <label for="csvFile">CSV を取込</label>
+            <input id="csvFile" type="file" accept=".csv" onchange="if(this.files[0])importIdentityCSV(this.files[0])">
+            <button class="btn-print" onclick="exportIdentityCSV()">CSV をエクスポート</button>
+            <button class="btn-print" onclick="clearAllIdentities()" style="border-color:var(--alert);color:var(--alert);">全削除</button>
+            <span class="desc">CSV ヘッダ: <code>user_id,deceased,deceased_age,chief,relation,phone,email,funeral_date,memo</code>（user_id 必須、他は任意）</span>
+        </div>
+        <div id="identitySummary" style="margin-top:12px;font-size:12px;color:var(--ink-3);"></div>
+        <div id="identityQuickList" style="margin-top:16px;"></div>
+    </section>
+
+    <!-- 機能別 -->
+    <section class="panel" id="features" data-level="1">
+        <div class="panel-head">
+            <h2>機能別 利用状況<span class="phase-badge phase-1">Phase 1</span></h2>
+            <span class="panel-meta">event_type 別カウント</span>
+        </div>
+        <p class="desc">各機能の利用イベント発火数。グリーフケア機能の継続利用は、ご遺族との接点維持の指標。</p>
+        <div class="grid-3" id="featureGrid"></div>
+    </section>
+
+</main>
+
+<footer>
+    <div class="footer-actions">
+        <button class="btn-print" onclick="window.print()">📄 月次レポートを印刷 / PDF 保存</button>
+        <button class="btn-print" onclick="resetActionLog()">対応済みマークをリセット</button>
+    </div>
+    本コンソールは <code>channel=funeral</code> でフィルタした Supabase の <code>event_logs</code> を直接集計しています。<br>
+    データソース: ReliefNote ご遺族アプリ <code>index.html</code> の <code>logEvent()</code> が記録する全イベント。anon SELECT 権限は <code>migration 008</code> で付与済み。<br>
+    ROI 算出根拠: 仏壇平均単価 ¥500K（日本宗教用具協同組合）/ 仏壇成約率 25%（業界中央値）/ スタッフ時給 ¥3,000（事前相談員相場）/ 拡張接点単価 ¥800K（家族葬中央値）。これらは推定値であり、御社実数で要校正。<br>
+    Powered by ReliefNote — 葬儀後のご遺族と葬儀社をつなぐ、唯一のアフターケア基盤。
+</footer>
+
+<!-- ご遺族詳細モーダル -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+// ============================================================
+// 設定
+// ============================================================
+const SUPABASE_URL = 'https://yxsjqsxjjugvwkxpkypn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4c2pxc3hqanVndndreHBreXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTMxMzQsImV4cCI6MjA4OTEyOTEzNH0.vjrRMcjZZThjHY5P3zlz1uJJ0Y2awHqyI1h1AFvO2jk';
+function currentChannel() {
+    const sel = document.getElementById('channelSelect');
+    return (sel && sel.value) ? sel.value : 'funeral';
+}
+const FETCH_LOOKBACK_DAYS = 365;  // 12ヶ月分。トレンド・予測に必要
+const FETCH_LIMIT = 10000;
+
+// ROI 計算定数
+const BUTSUDAN_AVG_PRICE = 500000;       // 仏壇平均単価（業界中央値）
+const BUTSUDAN_CONVERSION_RATE = 0.25;   // 49日タイミング訴求での成約率推定
+const STAFF_HOURLY_RATE = 3000;          // 事前相談員時給
+const FAMILY_EXPANSION_VALUE = 800000;   // 拡張接点1名あたり将来単価（家族葬中央値）
+const MONTHLY_FEE = 50000;               // 月額参考価格
+
+// ============================================================
+// task_id → domain map (tasks_master.csv 準拠)
+// ============================================================
+const TASK_DOMAIN = {
+    'RN-H24-02':'ADMIN','RN-D7-01':'FUNERAL','RN-D7-06':'ADMIN','RN-D7-10':'FINANCE',
+    'RN-D7-14':'EMPLOYMENT','RN-D7-16':'DIGITAL','RN-D7-17':'FINANCE','RN-D7-30':'HEALTH',
+    'RN-D7-31':'EMPLOYMENT','RN-D14-01':'ADMIN','RN-D14-02':'HEALTH','RN-D14-03':'HEALTH',
+    'RN-D14-04':'HEALTH','RN-D14-05':'HEALTH','RN-D14-06':'PENSION','RN-D14-07':'PENSION',
+    'RN-D14-08':'PENSION','RN-D14-09':'FINANCE','RN-D14-10':'FINANCE','RN-D14-11':'INSURANCE',
+    'RN-D14-11b':'INSURANCE','RN-D14-11c':'INSURANCE','RN-D14-15':'HOUSING','RN-D14-16':'DIGITAL',
+    'RN-D14-17':'FINANCE','RN-D14-18':'HOUSING','RN-D14-20':'INHERITANCE','RN-D14-23':'HEALTH',
+    'RN-D14-24':'GOVT_BENEFIT','RN-D14-25b':'TAX','RN-D14-27':'PENSION','RN-D14-28':'INSURANCE',
+    'RN-D14-40':'PENSION','RN-D14-41':'PENSION','RN-D14-42':'EMPLOYMENT','RN-D14-43':'EMPLOYMENT',
+    'RN-D14-45':'EMPLOYMENT','RN-D14-52':'FINANCE','RN-D14-54':'FINANCE','RN-D14-60':'HOUSING',
+    'RN-D14-70':'CONTRACTS','RN-D14-71':'PENSION','RN-D14-72':'CONTRACTS',
+    'RN-M3-01':'INHERITANCE','RN-M3-02':'FINANCE','RN-M3-03':'INHERITANCE','RN-M3-04':'FINANCE',
+    'RN-M3-07':'INHERITANCE','RN-M3-11':'INHERITANCE','RN-M3-22':'INHERITANCE','RN-M4-01':'TAX',
+    'RN-M10-01':'TAX','RN-M10-05':'FINANCE','RN-M10-07':'CAR','RN-Y3-01':'INHERITANCE'
+};
+const DOMAIN_LABEL = {
+    ADMIN:'行政（死亡届・世帯主変更ほか）', FUNERAL:'葬儀（葬儀社決定）', FINANCE:'お金（口座凍結・名義変更ほか）',
+    HEALTH:'健康保険（資格喪失・葬祭費）', PENSION:'年金・保険（遺族年金・未支給）',
+    INSURANCE:'保険（生命・医療・共済請求）', EMPLOYMENT:'勤務（死亡退職金・労災）',
+    HOUSING:'住まい（公共料金・賃貸）', DIGITAL:'デジタル（携帯・サブスク・PW）',
+    INHERITANCE:'相続（遺言・戸籍・遺産分割）', TAX:'税金（準確定申告・相続税）',
+    CAR:'自動車（名義変更・廃車）', CONTRACTS:'各種契約（NHK・新聞）',
+    GOVT_BENEFIT:'給付金（ひとり親手当ほか）'
+};
+const DOMAIN_TASK_COUNT = (function() {
+    const counts = {};
+    Object.values(TASK_DOMAIN).forEach(d => { counts[d] = (counts[d] || 0) + 1; });
+    return counts;
+})();
+
+// イベント種別 日本語ラベル（タイムライン表示用）
+const EVENT_LABEL = {
+    'session_start': 'アプリ起動', 'session_end': 'アプリ離脱',
+    'screen_viewed': '画面閲覧', 'task_started': 'タスク着手',
+    'task_completed': 'タスク完了', 'task_assigned': 'タスク割当',
+    'task_hidden': 'タスク非表示', 'task_detail_opened': 'タスク詳細閲覧',
+    'tasks_generated': 'タスク生成',
+    'grief_log_saved': 'グリーフ記録', 'grief_alert_triggered': '⚠ グリーフアラート発火',
+    'grief_screen_viewed': 'グリーフケア画面', 'grief_emotion_selected': '感情選択',
+    'grief_memorial_added': '思い出を追加', 'grief_memorial_deleted': '思い出を削除',
+    'grief_prompt_started': 'グリーフプロンプト開始', 'grief_prompt_cycled': 'プロンプト切替',
+    'grief_ai_chat_opened': 'AIチャット開封',
+    'wave_sheet_opened': '波の記録 開封', 'wave_saved': '波の記録 保存',
+    'anniv_today_shown': '記念日 今日表示', 'anniv_sheet_opened': '記念日シート開封',
+    'anniv_added': '記念日 登録', 'anniv_deleted': '記念日 削除',
+    'milestone_shown': 'マイルストーン到達', 'milestone_reflection_saved': 'マイルストーン振返り',
+    'therapy_started': 'セラピーフロー開始', 'therapy_completed': 'セラピーフロー完了',
+    'rescue_opened': 'レスキュー開封', 'rescue_action': 'レスキューアクション',
+    'case_created': '家族共有 開始', 'case_joined': 'ご家族 招待受諾', 'case_left': '家族共有 退出',
+    'family_invite_opened': '招待画面開封', 'family_member_removed': '家族削除',
+    'reminder_set': 'リマインダー設定',
+    'ai_chat_copy': 'AI回答コピー', 'ai_chat_share': 'AI回答シェア',
+    'ai_chat_feedback': 'AIフィードバック', 'ai_chat_handoff': 'AIから人へ引継',
+    'user_registered': 'ユーザー登録', 'profile_completed': 'プロフィール完了',
+    'share_action': '共有書き出し', 'frontend_error': 'フロントエラー'
+};
+
+// ============================================================
+// フェーズ計算（phase_master.csv 準拠）
+// ============================================================
+const PHASE_BUCKETS = [
+    { code:'H24', label:'当日',       start:0,   end:0 },
+    { code:'D7',  label:'7日以内',    start:1,   end:7 },
+    { code:'D14', label:'14日以内',   start:8,   end:14 },
+    { code:'M3',  label:'3か月以内',  start:15,  end:90 },
+    { code:'M4',  label:'4か月以内',  start:91,  end:120 },
+    { code:'M10', label:'10か月以内', start:121, end:300 },
+    { code:'Y3',  label:'3年以内',    start:301, end:99999 }
+];
+function computePhase(firstSeen) {
+    const f = new Date(firstSeen);
+    const days = Math.floor((Date.now() - f.getTime()) / 86400000);
+    const bucket = PHASE_BUCKETS.find(b => days >= b.start && days <= b.end) || PHASE_BUCKETS[PHASE_BUCKETS.length - 1];
+    let suffix = '';
+    if (bucket.code === 'M3') {
+        if (days < 49) suffix = ` / 49日まで残り${49 - days}日`;
+        else if (days === 49) suffix = ' / 四十九日';
+        else if (days <= 56) suffix = ` / 49日経過 ${days - 49}日`;
+        else suffix = ` / 経過${days}日`;
+    } else if (bucket.code === 'M4' || bucket.code === 'M10') {
+        suffix = ` / 経過${days}日`;
+    }
+    return { code: bucket.code, label: `${bucket.code}・${bucket.label}${suffix}`, days };
+}
+
+// ============================================================
+// ユーティリティ
+// ============================================================
+function esc(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function shortUid(uid) { return uid ? String(uid).slice(-4) : '----'; }
+function fmtNum(n) {
+    if (typeof n !== 'number') n = parseInt(n, 10) || 0;
+    return n.toLocaleString('ja-JP');
+}
+function fmtMoney(n) {
+    if (n >= 10000000) return '¥' + (n / 10000000).toFixed(1) + '千万';
+    if (n >= 1000000) return '¥' + (n / 1000000).toFixed(1) + 'M';
+    if (n >= 10000) return '¥' + Math.round(n / 1000) + 'K';
+    return '¥' + fmtNum(Math.round(n));
+}
+function fmtDate(d) {
+    if (!(d instanceof Date)) d = new Date(d);
+    if (isNaN(d.getTime())) return '—';
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtDateTime(d) {
+    if (!(d instanceof Date)) d = new Date(d);
+    if (isNaN(d.getTime())) return '—';
+    return `${fmtDate(d)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function timeAgo(d) {
+    if (!(d instanceof Date)) d = new Date(d);
+    const sec = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (sec < 60) return `${sec}秒前`;
+    if (sec < 3600) return `${Math.floor(sec / 60)}分前`;
+    if (sec < 86400) return `${Math.floor(sec / 3600)}時間前`;
+    return `${Math.floor(sec / 86400)}日前`;
+}
+function daysAgoISO(n) { return new Date(Date.now() - n * 86400000).toISOString(); }
+function statusBadge(status) {
+    const map = { '順調':'positive', '完了間近':'positive', '滞留':'neutral', '要フォロー':'warn' };
+    return `<span class="badge ${map[status] || 'muted'}">${esc(status)}</span>`;
+}
+function emptyState(msg, hint) {
+    // Phase 1 のオンボーディング期は guide クラスで装飾（✨アイコン）を表示
+    const isOnboarding = (document.body.classList.contains('level-basic')) || _isDemo;
+    const cls = isOnboarding ? 'empty-state guide' : 'empty-state';
+    const safeHint = hint || 'データが集まると、ここに自動で表示されます';
+    return `<div class="${cls}">${esc(msg)}<div class="hint">${esc(safeHint)}</div></div>`;
+}
+function loadingState() { return `<div class="empty-state"><span class="spinner"></span>読み込み中…</div>`; }
+
+// ============================================================
+// URL パラメータ（level / demo）
+// ============================================================
+function getUrlParams() {
+    const p = new URLSearchParams(location.search);
+    const lvl = (p.get('level') || 'full').toLowerCase();
+    const valid = ['basic', 'advanced', 'full'];
+    return {
+        level: valid.includes(lvl) ? lvl : 'full',
+        demo: p.get('demo') === '1'
+    };
+}
+function applyLevelClass() {
+    const { level } = getUrlParams();
+    document.body.classList.remove('level-basic', 'level-advanced', 'level-full');
+    document.body.classList.add('level-' + level);
+    const sel = document.getElementById('levelSelect');
+    if (sel) sel.value = level;
+}
+function setLevel(level) {
+    const p = new URLSearchParams(location.search);
+    p.set('level', level);
+    location.search = p.toString();
+}
+function exitDemo() {
+    const p = new URLSearchParams(location.search);
+    p.delete('demo');
+    location.search = p.toString();
+}
+let _isDemo = false;
+function applyDemoBanner() {
+    const { demo } = getUrlParams();
+    _isDemo = demo;
+    const banner = document.getElementById('demoBanner');
+    if (banner) banner.style.display = demo ? 'block' : 'none';
+    const brandSub = document.querySelector('.brand-mark .sub');
+    if (brandSub) brandSub.textContent = demo
+        ? '葬儀社向け アフターケアダッシュボード（デモモード）'
+        : '葬儀社向け アフターケアダッシュボード';
+}
+
+function setStatus(state, text) {
+    const el = document.getElementById('connStatus');
+    el.className = 'conn ' + state;
+    el.textContent = text;
+}
+function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.style.display = 'block';
+    box.innerHTML = '<strong>Supabase 取得エラー:</strong> ' + esc(msg);
+}
+function hideError() { document.getElementById('errorBox').style.display = 'none'; }
+
+// ============================================================
+// 対応済みワークフロー（localStorage）
+// ============================================================
+function getActionLog() {
+    try { return JSON.parse(localStorage.getItem('rn_action_log') || '{}'); }
+    catch(e) { return {}; }
+}
+function markActionDone(actionId) {
+    const log = getActionLog();
+    log[actionId] = new Date().toISOString();
+    localStorage.setItem('rn_action_log', JSON.stringify(log));
+    render();
+}
+function isActionDone(actionId) {
+    const log = getActionLog();
+    if (!log[actionId]) return false;
+    // 24時間で自動再表示
+    const done = new Date(log[actionId]).getTime();
+    return (Date.now() - done) < 24 * 3600 * 1000;
+}
+function resetActionLog() {
+    if (confirm('すべての「対応済み」マークをリセットしますか？')) {
+        localStorage.removeItem('rn_action_log');
+        render();
+    }
+}
+
+// ============================================================
+// Supabase fetch
+// ============================================================
+// ============================================================
+// デモデータ生成（?demo=1 のとき本物の Supabase fetch を置換）
+// ============================================================
+function buildDemoEvents() {
+    const events = [];
+    const now = Date.now();
+    const day = 86400000;
+    const ch = currentChannel();
+    // 12 名のご遺族 — 経過日を散らして 49日・100日・1周忌 候補を作る
+    const users = [
+        { id: 'demo-001', daysAgo: 75, alert: false, anniv: '49日法要' },
+        { id: 'demo-002', daysAgo: 50, alert: false },
+        { id: 'demo-003', daysAgo: 45, alert: false },
+        { id: 'demo-004', daysAgo: 30, alert: false },
+        { id: 'demo-005', daysAgo: 22, alert: true  },
+        { id: 'demo-006', daysAgo: 18, alert: false },
+        { id: 'demo-007', daysAgo: 12, alert: false },
+        { id: 'demo-008', daysAgo: 9,  alert: true  },
+        { id: 'demo-009', daysAgo: 6,  alert: false },
+        { id: 'demo-010', daysAgo: 3,  alert: false },
+        { id: 'demo-011', daysAgo: 95, alert: false, anniv: '百ヶ日' },
+        { id: 'demo-012', daysAgo: 110, alert: true  }
+    ];
+    const tasks = [
+        'RN-H24-02','RN-D7-01','RN-D7-06','RN-D7-10','RN-D7-30','RN-D14-01',
+        'RN-D14-06','RN-D14-09','RN-D14-11','RN-D14-20','RN-D14-25b','RN-M3-01','RN-M3-22','RN-M4-01'
+    ];
+    const grief_moods = ['平穏', '寂しい', '悲しい', '辛い', '思い出す'];
+    function rand(n) { return Math.floor(Math.random() * n); }
+    function pick(arr) { return arr[rand(arr.length)]; }
+
+    users.forEach(u => {
+        const start = now - u.daysAgo * day;
+        // app_opened
+        events.push({
+            user_id: u.id, event_type: 'app_opened',
+            event_data: { channel: ch },
+            created_at: new Date(start).toISOString()
+        });
+        // 初日に 3 件 task_detail_opened
+        for (let i = 0; i < 3; i++) {
+            events.push({
+                user_id: u.id, event_type: 'task_detail_opened',
+                event_data: { channel: ch, task_id: tasks[i] },
+                created_at: new Date(start + 60_000 + i * 90_000).toISOString()
+            });
+        }
+        // 経過日に応じて task_completed
+        const completedCount = Math.min(Math.floor(u.daysAgo / 8), tasks.length - 1);
+        for (let i = 0; i < completedCount; i++) {
+            events.push({
+                user_id: u.id, event_type: 'task_completed',
+                event_data: { channel: ch, task_id: tasks[i] },
+                created_at: new Date(start + (i + 1) * day + 3 * 3600_000).toISOString()
+            });
+        }
+        // grief_log_saved を散発的に
+        for (let d = 1; d < Math.min(u.daysAgo, 35); d += 2) {
+            if (Math.random() < 0.45) {
+                events.push({
+                    user_id: u.id, event_type: 'grief_log_saved',
+                    event_data: { channel: ch, mood: pick(grief_moods) },
+                    created_at: new Date(start + d * day + (18 + rand(6)) * 3600_000).toISOString()
+                });
+            }
+        }
+        // screen_viewed をいくつか
+        for (let d = 0; d < Math.min(u.daysAgo, 20); d += 4) {
+            events.push({
+                user_id: u.id, event_type: 'screen_viewed',
+                event_data: { channel: ch, screen: pick(['home','guide','grief','consult']) },
+                created_at: new Date(start + d * day + 9 * 3600_000).toISOString()
+            });
+        }
+        // grief_alert_triggered（一部のユーザー、直近に発火）
+        if (u.alert) {
+            const alertAt = now - rand(3) * day - rand(12) * 3600_000;
+            events.push({
+                user_id: u.id, event_type: 'grief_alert_triggered',
+                event_data: { channel: ch, severity: pick(['high','medium']) },
+                created_at: new Date(alertAt).toISOString()
+            });
+        }
+        // anniv_added（49日 / 百ヶ日）
+        if (u.anniv) {
+            events.push({
+                user_id: u.id, event_type: 'anniv_added',
+                event_data: { channel: ch, kind: u.anniv },
+                created_at: new Date(start + 30 * day).toISOString()
+            });
+        }
+    });
+    return events.sort((a, b) => a.created_at.localeCompare(b.created_at));
+}
+
+function buildDemoFollowups() {
+    const now = Date.now();
+    const day = 86400000;
+    const staffNames = ['田中（事前相談員）', '佐藤（家族葬担当）', '高橋（アフターサービス）'];
+    const seed = [
+        { user: 'demo-001', staff: 0, action: 'phone_call', outcome: 'completed', daysAgo: 7,  note: '49日法要のご相談あり。来週ご来店予定。' },
+        { user: 'demo-003', staff: 1, action: 'visit',      outcome: 'pending',   daysAgo: 12, note: '仏壇・本位牌のご相談。3社見積もり比較中。' },
+        { user: 'demo-004', staff: 2, action: 'phone_call', outcome: 'no_answer', daysAgo: 5,  note: 'お電話差し上げたが不在。明日再架電予定。' },
+        { user: 'demo-007', staff: 0, action: 'message',    outcome: 'completed', daysAgo: 2,  note: 'LINE で香典返しのご案内をお送りしました。' },
+        { user: 'demo-002', staff: 1, action: 'visit',      outcome: 'pending',   daysAgo: 9,  note: '相続のご相談、提携税理士をご紹介中。' },
+        { user: 'demo-011', staff: 2, action: 'phone_call', outcome: 'completed', daysAgo: 14, note: '百ヶ日法要のご相談、ご予約頂きました。' }
+    ];
+    return seed.map((f, i) => ({
+        id: 1000 + i,
+        channel: currentChannel(),
+        user_id: f.user,
+        staff_name: staffNames[f.staff],
+        action_type: f.action,
+        outcome: f.outcome,
+        note: f.note,
+        created_at: new Date(now - f.daysAgo * day).toISOString()
+    }));
+}
+
+// ============================================================
+// ベースライン（クリア機能）: channel別に「これ以降のイベントだけ表示」を localStorage で管理
+// ============================================================
+function baselineKey(channel) { return `relief_funeral_console_baseline_${channel}`; }
+function getBaselineISO() {
+    return localStorage.getItem(baselineKey(currentChannel())) || null;
+}
+function setBaselineNow() {
+    const ch = currentChannel();
+    const label = ch === 'hokuryu' ? 'channel = hokuryu' : `channel = ${ch}`;
+    if (!confirm(`${label} の現在のイベント表示をクリアします。\nこれ以降に記録されたアプリ利用だけが表示されるようになります。\n（解除すれば再表示できます）\n\n実行しますか？`)) return;
+    localStorage.setItem(baselineKey(ch), new Date().toISOString());
+    applyBaselineBanner();
+    render();
+}
+function clearBaseline() {
+    localStorage.removeItem(baselineKey(currentChannel()));
+    applyBaselineBanner();
+    render();
+}
+function applyBaselineBanner() {
+    const banner = document.getElementById('baselineBanner');
+    const text = document.getElementById('baselineBannerText');
+    if (!banner || !text) return;
+    const iso = getBaselineISO();
+    if (!iso) { banner.style.display = 'none'; return; }
+    banner.style.display = 'block';
+    const d = new Date(iso);
+    text.textContent = `${currentChannel()} は ${fmtDateTime(d)} 以降のアプリ利用だけを表示中`;
+}
+
+async function fetchAllEvents() {
+    if (_isDemo) return buildDemoEvents();
+    const baseline = getBaselineISO();
+    const since = baseline || daysAgoISO(FETCH_LOOKBACK_DAYS);
+    const url = `${SUPABASE_URL}/rest/v1/event_logs`
+        + `?select=user_id,event_type,event_data,created_at`
+        + `&event_data->>channel=eq.${currentChannel()}`
+        + `&created_at=gte.${since}`
+        + `&order=created_at.asc`
+        + `&limit=${FETCH_LIMIT}`;
+    const res = await fetch(url, {
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Accept': 'application/json'
+        }
+    });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(res.status + ' ' + (text || res.statusText).slice(0, 300));
+    }
+    return await res.json();
+}
+
+// ============================================================
+// 集計
+// ============================================================
+function buildSelfNameMap(events) {
+    // event_data.user_name の最新値を user_id ごとに採用
+    const latest = {};
+    for (const ev of events) {
+        const uid = ev.user_id;
+        const nm = ev.event_data && typeof ev.event_data.user_name === 'string'
+            ? ev.event_data.user_name.trim() : '';
+        if (!uid || !nm) continue;
+        const prev = latest[uid];
+        if (!prev || ev.created_at > prev.at) {
+            latest[uid] = { name: nm, at: ev.created_at };
+        }
+    }
+    const out = {};
+    for (const uid in latest) out[uid] = latest[uid].name;
+    return out;
+}
+
+function aggregateUsers(events) {
+    const users = new Map();
+    for (const ev of events) {
+        const uid = ev.user_id;
+        if (!uid) continue;
+        if (!users.has(uid)) {
+            users.set(uid, {
+                user_id: uid,
+                firstSeen: ev.created_at,
+                lastSeen: ev.created_at,
+                activeDates: new Set(),
+                tasksCompleted: new Set(),
+                alerts: 0,
+                lastAlertAt: null,
+                alerts7d: 0,
+                griefLogs: 0,
+                eventCounts: {},
+                events: []
+            });
+        }
+        const u = users.get(uid);
+        if (ev.created_at < u.firstSeen) u.firstSeen = ev.created_at;
+        if (ev.created_at > u.lastSeen) u.lastSeen = ev.created_at;
+        u.activeDates.add(ev.created_at.slice(0, 10));
+        u.eventCounts[ev.event_type] = (u.eventCounts[ev.event_type] || 0) + 1;
+        u.events.push(ev);
+        if (ev.event_type === 'task_completed') {
+            const tid = ev.event_data && ev.event_data.task_id;
+            if (tid) u.tasksCompleted.add(tid);
+        }
+        if (ev.event_type === 'grief_log_saved') u.griefLogs += 1;
+        if (ev.event_type === 'grief_alert_triggered') {
+            u.alerts += 1;
+            if (!u.lastAlertAt || ev.created_at > u.lastAlertAt) u.lastAlertAt = ev.created_at;
+            const sevenDaysAgo = Date.now() - 7 * 86400000;
+            if (new Date(ev.created_at).getTime() >= sevenDaysAgo) u.alerts7d += 1;
+        }
+    }
+    const list = [];
+    for (const u of users.values()) {
+        list.push({
+            user_id: u.user_id,
+            firstSeen: u.firstSeen,
+            lastSeen: u.lastSeen,
+            activeDays: u.activeDates.size,
+            tasksCompleted: u.tasksCompleted,
+            tasksCompletedSize: u.tasksCompleted.size,
+            alerts: u.alerts,
+            alerts7d: u.alerts7d,
+            lastAlertAt: u.lastAlertAt,
+            griefLogs: u.griefLogs,
+            eventCounts: u.eventCounts,
+            events: u.events
+        });
+    }
+    return list;
+}
+
+function userStatus(u) {
+    const phase = computePhase(u.firstSeen);
+    const daysSinceLast = (Date.now() - new Date(u.lastSeen).getTime()) / 86400000;
+    if (phase.code === 'M10' || phase.code === 'Y3') return '完了間近';
+    if (daysSinceLast >= 14) return '要フォロー';
+    if (daysSinceLast >= 7) return '滞留';
+    return '順調';
+}
+
+// ============================================================
+// State
+// ============================================================
+let _events = [];
+let _allUsers = [];
+let _allUsersMap = {};
+let _selfNameMap = {}; // user_id → アプリでご遺族自身が入力した表示名（event_data.user_name の最新値）
+let familyFilter = '全て';
+
+// ============================================================
+// Hero: 今週やるべきこと
+// ============================================================
+function buildPriorityActions(events, users) {
+    const actions = [];
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    const fourteenDaysAgo = Date.now() - 14 * 86400000;
+
+    // 1. グリーフアラート発火 (最緊急)
+    for (const u of users) {
+        if (u.alerts7d >= 1) {
+            actions.push({
+                id: 'alert_' + u.user_id,
+                priority: 100 + u.alerts7d,
+                tier: 'urgent',
+                target: `${displayName(u.user_id, {compact:true})}（経過 ${computePhase(u.firstSeen).days}日）`,
+                reason: `<strong>グリーフアラート ${u.alerts7d} 件発火</strong>（直近7日）。深いグリーフのご遺族。お電話でご様子伺いを。`,
+                action: { user_id: u.user_id }
+            });
+        }
+    }
+
+    // 2. 49日まで残り7日以内
+    for (const u of users) {
+        const phase = computePhase(u.firstSeen);
+        if (phase.code === 'M3' && phase.days >= 42 && phase.days <= 48) {
+            const lastActive = new Date(u.lastSeen).getTime();
+            if (lastActive >= sevenDaysAgo) {
+                actions.push({
+                    id: '49d_' + u.user_id,
+                    priority: 80 + (49 - phase.days),
+                    tier: 'gold',
+                    target: `${displayName(u.user_id, {compact:true})}（49日まで残り ${49 - phase.days}日）`,
+                    reason: `<strong>仏壇・本位牌・法要のご相談ベストタイミング</strong>。完了タスク ${u.tasksCompletedSize}/56・直近セッション ${timeAgo(u.lastSeen)}。`,
+                    action: { user_id: u.user_id }
+                });
+            }
+        }
+    }
+
+    // 3. 14日以上アプリ未利用 (要フォロー)
+    for (const u of users) {
+        const lastActive = new Date(u.lastSeen).getTime();
+        const phase = computePhase(u.firstSeen);
+        if (lastActive < fourteenDaysAgo && phase.code !== 'Y3' && phase.code !== 'M10') {
+            actions.push({
+                id: 'silent_' + u.user_id,
+                priority: 50,
+                tier: 'warn',
+                target: `${displayName(u.user_id, {compact:true})}（${phase.label}）`,
+                reason: `<strong>${Math.floor((Date.now() - lastActive) / 86400000)}日間アプリ未利用</strong>。手続き滞留・心理的孤立の可能性。安否確認のお声がけを。`,
+                action: { user_id: u.user_id }
+            });
+        }
+    }
+
+    // 4. anniv_added 直近7日以内
+    for (const ev of events) {
+        if (ev.event_type !== 'anniv_added') continue;
+        const m = ev.event_data && ev.event_data.month;
+        const d = ev.event_data && ev.event_data.day;
+        if (!m || !d) continue;
+        let date = new Date(new Date().getFullYear(), m - 1, d);
+        if (date < new Date()) date = new Date(date.getFullYear() + 1, m - 1, d);
+        const daysAhead = (date.getTime() - Date.now()) / 86400000;
+        if (daysAhead >= 0 && daysAhead <= 14) {
+            actions.push({
+                id: 'memorial_' + ev.user_id + '_' + m + '_' + d,
+                priority: 60 - Math.floor(daysAhead),
+                tier: 'normal',
+                target: `${displayName(ev.user_id, {compact:true})}（${m}月${d}日 / あと${Math.floor(daysAhead)}日）`,
+                reason: `ご遺族登録の<strong>命日・法要日</strong>が近い。供物・お花・お参りのご提案機会。`,
+                action: { user_id: ev.user_id }
+            });
+        }
+    }
+
+    // 5. 直近対応で「折り返し要」「保留」のままになっているもの
+    for (const f of _followups) {
+        if (!['callback_needed','pending'].includes(f.outcome)) continue;
+        const ageDays = (Date.now() - new Date(f.created_at).getTime()) / 86400000;
+        if (ageDays < 2 || ageDays > 14) continue;
+        // この遺族に新しい対応があるかチェック
+        const list = _followupsByUser[f.user_id] || [];
+        const newer = list.find(x => x.created_at > f.created_at);
+        if (newer) continue;
+        actions.push({
+            id: 'callback_' + f.id,
+            priority: 70,
+            tier: 'urgent',
+            target: `${displayName(f.user_id, {compact:true})}`,
+            reason: `<strong>${esc(OUTCOME_LABEL[f.outcome])}</strong>のまま${Math.floor(ageDays)}日経過（${esc(f.staff_name)} の対応より）。再アプローチ推奨。`,
+            action: { user_id: f.user_id }
+        });
+    }
+
+    actions.sort((a, b) => b.priority - a.priority);
+    // dedupe by user_id (keep highest priority)
+    const seen = new Set();
+    const uniq = [];
+    for (const a of actions) {
+        const key = a.action.user_id;
+        if (!seen.has(key)) { seen.add(key); uniq.push(a); }
+    }
+    return uniq.slice(0, 6);
+}
+
+function renderHero(events, users) {
+    const actions = buildPriorityActions(events, users);
+    const el = document.getElementById('actionList');
+    if (actions.length === 0) {
+        el.innerHTML = emptyState('今週、優先度の高いアクションはありません', 'グリーフアラート・49日タイミング・要フォロー・記念日近接ご遺族が出現すると自動表示されます');
+        return;
+    }
+    el.innerHTML = actions.map((a, i) => {
+        const done = isActionDone(a.id);
+        return `
+        <div class="action-item ${a.tier} ${done ? 'done' : ''}">
+            <div class="action-rank">${i + 1}</div>
+            <div class="action-body">
+                <div class="target">${a.target}</div>
+                <div class="reason">${a.reason}</div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-action ghost" onclick="showFamilyDetail('${esc(a.action.user_id)}')">詳細</button>
+                <button class="btn-action ${done ? 'ghost' : ''}" onclick="markActionDone('${esc(a.id)}')">${done ? '取消' : '対応済み'}</button>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+// ============================================================
+// ROI: 円換算
+// ============================================================
+function calcROI(events, users, days) {
+    const since = Date.now() - days * 86400000;
+    const inRange = events.filter(e => new Date(e.created_at).getTime() >= since);
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+
+    // 1. 仏壇販売 機会創出額
+    const touchpointCount = users.filter(u => {
+        const p = computePhase(u.firstSeen);
+        return p.days >= 35 && p.days <= 65 && new Date(u.lastSeen).getTime() >= sevenDaysAgo;
+    }).length;
+    const butsudanValue = touchpointCount * BUTSUDAN_AVG_PRICE * BUTSUDAN_CONVERSION_RATE;
+
+    // 2. スタッフ工数 削減
+    const tasks = inRange.filter(e => e.event_type === 'task_completed').length;
+    const griefs = inRange.filter(e => e.event_type === 'grief_log_saved').length;
+    const ai = inRange.filter(e => e.event_type === 'grief_ai_chat_opened').length;
+    const therapy = inRange.filter(e => e.event_type === 'therapy_completed').length;
+    const savedMin = tasks * 5 + griefs * 3 + ai * 10 + therapy * 8;
+    const laborValue = (savedMin / 60) * STAFF_HOURLY_RATE;
+
+    // 3. 拡張接点 将来パイプライン
+    const familyExp = inRange.filter(e => e.event_type === 'case_joined' || e.event_type === 'case_created').length;
+    const pipelineValue = familyExp * FAMILY_EXPANSION_VALUE * 0.05;  // 将来5%が施行に至る前提（控えめ）
+
+    return {
+        butsudan: { value: butsudanValue, count: touchpointCount, detail: `${touchpointCount}名 × ¥${fmtNum(BUTSUDAN_AVG_PRICE)} × 成約率 ${Math.round(BUTSUDAN_CONVERSION_RATE * 100)}%` },
+        labor: { value: laborValue, hours: (savedMin / 60).toFixed(1), detail: `${(savedMin / 60).toFixed(1)} 時間 × 時給 ¥${fmtNum(STAFF_HOURLY_RATE)}` },
+        pipeline: { value: pipelineValue, count: familyExp, detail: `${familyExp}名 × 単価 ¥${fmtNum(FAMILY_EXPANSION_VALUE)} × 期待成約率 5%` },
+        total: butsudanValue + laborValue + pipelineValue
+    };
+}
+
+function renderROI(events, users, days) {
+    const roi = calcROI(events, users, days);
+    document.getElementById('roiTitle').textContent = `直近 ${days} 日、ReliefNote が御社にもたらした価値`;
+    document.getElementById('roiScope').textContent = `期間: 直近 ${days} 日間 / 推定値 (要御社実数で校正)`;
+
+    const cells = [
+        {
+            label: '① 仏壇販売 機会創出額',
+            value: roi.butsudan.value,
+            detail: roi.butsudan.detail
+        },
+        {
+            label: '② スタッフ工数 削減 円換算',
+            value: roi.labor.value,
+            detail: roi.labor.detail
+        },
+        {
+            label: '③ 拡張接点 将来パイプライン',
+            value: roi.pipeline.value,
+            detail: roi.pipeline.detail
+        }
+    ];
+    document.getElementById('roiGrid').innerHTML = cells.map(c => `
+        <div class="roi-cell">
+            <div class="roi-label">${esc(c.label)}</div>
+            <div class="roi-value"><span class="currency">¥</span>${fmtNum(Math.round(c.value))}</div>
+            <div class="roi-detail">${esc(c.detail)}</div>
+        </div>
+    `).join('');
+
+    document.getElementById('roiTotal').innerHTML = `<span class="currency">¥</span>${fmtNum(Math.round(roi.total))}`;
+    const fee = MONTHLY_FEE * (days / 30);
+    const multiplier = fee > 0 ? (roi.total / fee).toFixed(1) : '—';
+    document.getElementById('roiMultiplier').innerHTML = `想定月額 ¥${fmtNum(MONTHLY_FEE)} × ${(days/30).toFixed(1)}ヶ月 = ¥${fmtNum(Math.round(fee))} の <strong>${multiplier}倍</strong>の価値`;
+}
+
+// ============================================================
+// Impact cards
+// ============================================================
+function renderImpact(events, users, days) {
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    const since = Date.now() - days * 86400000;
+    const inRange = events.filter(e => new Date(e.created_at).getTime() >= since);
+    const touchpointCount = users.filter(u => {
+        const p = computePhase(u.firstSeen);
+        return p.days >= 35 && p.days <= 65 && new Date(u.lastSeen).getTime() >= sevenDaysAgo;
+    }).length;
+    const tasksCompleted = inRange.filter(e => e.event_type === 'task_completed').length;
+    const griefLogs = inRange.filter(e => e.event_type === 'grief_log_saved').length;
+    const aiChats = inRange.filter(e => e.event_type === 'grief_ai_chat_opened').length;
+    const therapy = inRange.filter(e => e.event_type === 'therapy_completed').length;
+    const savedMinutes = tasksCompleted * 5 + griefLogs * 3 + aiChats * 10 + therapy * 8;
+    const savedHours = (savedMinutes / 60).toFixed(1);
+    const totalContactDays = users.reduce((s, u) => s + u.activeDays, 0);
+    const familyExpansion = inRange.filter(e => e.event_type === 'case_joined' || e.event_type === 'case_created').length;
+    const earlyDetection = users.filter(u => u.alerts > 0).length;
+    const annivCount = inRange.filter(e => e.event_type === 'anniv_added').length;
+    const avgContactDays = users.length > 0 ? (totalContactDays / users.length).toFixed(1) : '0';
+
+    const cards = [
+        { label: 'お声がけ機会の創出', value: touchpointCount, unit: '件',
+          detail: '49日前後・直近7日アクティブご遺族数。仏壇・本位牌・法要のご相談タイミング。',
+          formula: 'COUNT(users WHERE 35 ≤ days_since_first ≤ 65 AND last_seen ≥ now()-7d)' },
+        { label: 'アフター手続き支援', value: tasksCompleted, unit: '件',
+          detail: 'アプリがご遺族の手続きを案内・完了した件数。本来は事前相談員が電話・対面対応する内容。',
+          formula: "COUNT(event_type='task_completed') WITHIN " + days + 'd' },
+        { label: 'スタッフ工数 削減推定', value: savedHours, unit: '時間',
+          detail: 'タスク×5分＋グリーフ記録×3分＋AIチャット×10分＋セラピー×8分。アプリが一次受けで吸収した推定対応時間。',
+          formula: 'tasks×5m + grief_logs×3m + ai×10m + therapy×8m' },
+        { label: '継続接点維持', value: fmtNum(totalContactDays), unit: '人日',
+          detail: 'ご遺族と御社が接点を持っている延べ日数。「忘れられない」関係性の構築指標。',
+          formula: 'SUM(active_days per user)' },
+        { label: 'ご家族 拡張接点', value: familyExpansion, unit: '件',
+          detail: '喪主以外のご家族（配偶者・お子様等）もアプリ利用者となった件数。将来の施行案件への種。',
+          formula: "COUNT(event_type IN ['case_created','case_joined'])" },
+        { label: 'グリーフ早期検知', value: earlyDetection, unit: '名',
+          detail: '深いグリーフのご遺族をアプリが早期検知した人数。お電話一本で信頼関係が深まる機会。',
+          formula: 'COUNT(DISTINCT user_id WHERE alerts > 0)' },
+        { label: '法要・記念日 把握', value: annivCount, unit: '件',
+          detail: 'ご遺族が登録した命日・法要日。供物・お参りの能動的なご案内機会。',
+          formula: "COUNT(event_type='anniv_added') WITHIN " + days + 'd' },
+        { label: 'ご遺族あたり 平均接点', value: avgContactDays, unit: '日',
+          detail: '1ご遺族あたり、平均してアプリを使っている日数。1か月以上 = 関係性維持に成功。',
+          formula: 'AVG(active_days per user)' }
+    ];
+    document.getElementById('impactGrid').innerHTML = cards.map(c => `
+        <div class="impact-card">
+            <div class="ic-label">${esc(c.label)}</div>
+            <div class="ic-value">${esc(c.value)}<span class="ic-unit">${esc(c.unit)}</span></div>
+            <div class="ic-detail">${esc(c.detail)}</div>
+            <div class="ic-formula">${esc(c.formula)}</div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// Operational Summary
+// ============================================================
+function renderSummary(events, days) {
+    const since = Date.now() - days * 86400000;
+    const inRange = events.filter(e => new Date(e.created_at).getTime() >= since);
+    const uniqueUsers = new Set(inRange.map(e => e.user_id)).size;
+    const sessions = inRange.filter(e => e.event_type === 'session_start').length;
+    const tasks = inRange.filter(e => e.event_type === 'task_completed').length;
+    const grief = inRange.filter(e => e.event_type === 'grief_log_saved').length;
+    const alerts = inRange.filter(e => e.event_type === 'grief_alert_triggered').length;
+    const cards = [
+        { label:'アクティブご遺族', value:uniqueUsers, unit:'人', sub:`直近${days}日 unique user_id`, src:'COUNT(DISTINCT user_id)' },
+        { label:'セッション数',     value:fmtNum(sessions),    unit:'',   sub:'session_start',   src:"event_type='session_start'" },
+        { label:'タスク完了',       value:fmtNum(tasks),       unit:'',   sub:'task_completed',   src:"event_type='task_completed'" },
+        { label:'グリーフ記録',     value:fmtNum(grief),       unit:'',   sub:'grief_log_saved',  src:"event_type='grief_log_saved'" },
+        { label:'グリーフアラート', value:alerts,      unit:'件', sub:'即対応推奨',                src:"event_type='grief_alert_triggered'", alert:true }
+    ];
+    document.getElementById('summaryGrid').innerHTML = cards.map(s => `
+        <div class="stat-card${s.alert ? ' alert-stat' : ''}">
+            <div class="stat-label">${esc(s.label)}</div>
+            <div class="stat-value">${esc(s.value)}<span class="stat-unit">${esc(s.unit)}</span></div>
+            <div class="stat-sub">${esc(s.sub)}</div>
+            <div class="stat-source">${esc(s.src)}</div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// Alerts
+// ============================================================
+function renderAlerts(users) {
+    const alertUsers = users
+        .filter(u => u.alerts > 0)
+        .sort((a, b) => (b.lastAlertAt || '').localeCompare(a.lastAlertAt || ''));
+    const el = document.getElementById('alertTable');
+    if (alertUsers.length === 0) {
+        el.innerHTML = emptyState('アラート発火なし', '対象期間中、grief_alert_triggered イベントは記録されていません');
+        document.getElementById('alertInsight').innerHTML = '';
+        return;
+    }
+    const rows = alertUsers.slice(0, 30).map(u => {
+        const done = isActionDone('alert_' + u.user_id);
+        return `
+        <tr class="clickable" onclick="showFamilyDetail('${esc(u.user_id)}')">
+            <td>${displayName(u.user_id)}</td>
+            <td><span style="font-size:12px;">${esc(fmtDateTime(u.lastAlertAt))}</span><div style="font-size:10px;color:var(--ink-mute);">${esc(timeAgo(u.lastAlertAt))}</div></td>
+            <td class="num"><span class="badge alert">${u.alerts7d}</span></td>
+            <td class="num">${u.griefLogs}</td>
+            <td><span style="font-size:11px;color:var(--ink-3);">経過 ${computePhase(u.firstSeen).days}日</span></td>
+            <td><span style="font-size:11px;color:var(--ink-3);">${esc(timeAgo(u.lastSeen))}</span></td>
+            <td onclick="event.stopPropagation()"><button class="btn-action ${done ? 'ghost' : 'alert'}" onclick="markActionDone('alert_${esc(u.user_id)}')">${done ? '取消' : '対応済み'}</button></td>
+        </tr>`;
+    }).join('');
+    el.innerHTML = `<table>
+        <thead><tr><th>user_id</th><th>最新発火</th><th class="num">7日件数</th><th class="num">grief_log 累計</th><th>経過</th><th>最終ログ</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+    const recent = alertUsers.filter(u => u.alerts7d >= 2).length;
+    document.getElementById('alertInsight').innerHTML =
+        `現在 <strong>${alertUsers.length} 名</strong> のご遺族でアラート履歴あり。直近7日に2回以上発火 = <strong>${recent} 名</strong>。<strong>24時間以内のお声がけが推奨</strong>されます。`;
+}
+
+// ============================================================
+// 49日 Touchpoints
+// ============================================================
+function renderTouchpoints(users) {
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    const candidates = users
+        .map(u => ({ ...u, _phase: computePhase(u.firstSeen) }))
+        .filter(u => u._phase.days >= 35 && u._phase.days <= 65)
+        .filter(u => new Date(u.lastSeen).getTime() >= sevenDaysAgo)
+        .sort((a, b) => a._phase.days - b._phase.days);
+
+    const el = document.getElementById('touchpointTable');
+    if (candidates.length === 0) {
+        el.innerHTML = emptyState('該当ご遺族なし', '49日前後（経過35〜65日）かつ直近7日アクティブなご遺族は現在いません');
+        document.getElementById('touchpointInsight').innerHTML = '';
+        return;
+    }
+    const rows = candidates.map(u => {
+        const dayLabel = u._phase.days < 49
+            ? `<strong style="color:var(--gold);">49日まで${49 - u._phase.days}日</strong>`
+            : u._phase.days === 49 ? `<strong style="color:var(--gold);">四十九日 当日</strong>`
+            : `<span style="color:var(--ink-3);">49日経過 ${u._phase.days - 49}日</span>`;
+        const signals = [];
+        if (u.eventCounts['anniv_added']) signals.push(`anniv×${u.eventCounts['anniv_added']}`);
+        if (u.eventCounts['therapy_completed']) signals.push(`therapy×${u.eventCounts['therapy_completed']}`);
+        if (u.eventCounts['grief_ai_chat_opened']) signals.push(`ai×${u.eventCounts['grief_ai_chat_opened']}`);
+        if (u.eventCounts['milestone_shown']) signals.push(`milestone×${u.eventCounts['milestone_shown']}`);
+        if (signals.length === 0) signals.push(`tasks×${u.tasksCompletedSize}`);
+        const done = isActionDone('49d_' + u.user_id);
+        return `
+        <tr class="clickable" onclick="showFamilyDetail('${esc(u.user_id)}')">
+            <td>${displayName(u.user_id)}</td>
+            <td><span style="font-size:12px;">${esc(fmtDate(u.firstSeen))}</span><div style="font-size:11px;">${dayLabel}</div></td>
+            <td class="num">${u.activeDays}</td>
+            <td class="num">${u.tasksCompletedSize}</td>
+            <td><span style="font-size:11px;color:var(--ink-3);">${esc(timeAgo(u.lastSeen))}</span></td>
+            <td><span class="mono" style="font-size:11px;">${esc(signals.join(' '))}</span></td>
+            <td onclick="event.stopPropagation()"><button class="btn-action ${done ? 'ghost' : ''}" onclick="markActionDone('49d_${esc(u.user_id)}')">${done ? '取消' : '対応済み'}</button></td>
+        </tr>`;
+    }).join('');
+    el.innerHTML = `<table>
+        <thead><tr><th>user_id</th><th>初回 / 49日カウント</th><th class="num">アクティブ日</th><th class="num">完了タスク</th><th>最終ログ</th><th>行動シグナル</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+    const opportunity = candidates.length * BUTSUDAN_AVG_PRICE * BUTSUDAN_CONVERSION_RATE;
+    document.getElementById('touchpointInsight').innerHTML =
+        `現在 <strong>${candidates.length} 名</strong> が 49日タイミングに到達中。仏壇平均単価 ¥${fmtNum(BUTSUDAN_AVG_PRICE)} × 成約率 ${Math.round(BUTSUDAN_CONVERSION_RATE*100)}% で計算すると、<strong>${fmtMoney(opportunity)}</strong> 相当の機会創出が眠っています。`;
+}
+
+// ============================================================
+// 先読み予測
+// ============================================================
+function renderForecast(users, events) {
+    // 49日到来予測
+    const next30_49 = users.filter(u => {
+        const p = computePhase(u.firstSeen);
+        return p.days >= 14 && p.days < 49;  // あと0〜35日で 49日
+    }).length;
+    const next60_100 = users.filter(u => {
+        const p = computePhase(u.firstSeen);
+        return p.days >= 40 && p.days < 100;
+    }).length;
+    const next90_365 = users.filter(u => {
+        const p = computePhase(u.firstSeen);
+        return p.days >= 275 && p.days < 365;
+    }).length;
+
+    // 法要日近接予測
+    let memorialIn30 = 0;
+    for (const ev of events) {
+        if (ev.event_type !== 'anniv_added') continue;
+        const m = ev.event_data && ev.event_data.month;
+        const d = ev.event_data && ev.event_data.day;
+        if (!m || !d) continue;
+        let date = new Date(new Date().getFullYear(), m - 1, d);
+        if (date < new Date()) date = new Date(date.getFullYear() + 1, m - 1, d);
+        const daysAhead = (date.getTime() - Date.now()) / 86400000;
+        if (daysAhead >= 0 && daysAhead <= 30) memorialIn30++;
+    }
+
+    const items = [
+        { when: '次 30 日以内', count: next30_49, detail: '四十九日を迎えるご遺族（仏壇・本位牌タイミング）' },
+        { when: '次 60 日以内', count: next60_100, detail: '百ヶ日を迎えるご遺族（追加法要のお話タイミング）' },
+        { when: '次 90 日以内', count: next90_365, detail: '一周忌を迎えるご遺族（年間法要のご案内タイミング）' },
+        { when: '次 30 日以内', count: memorialIn30, detail: 'ご遺族登録の命日・法要日（供物・お参りのご提案）' }
+    ];
+    document.getElementById('forecastGrid').innerHTML = items.map(it => `
+        <div class="forecast-card">
+            <div class="fc-when">${esc(it.when)}</div>
+            <div class="fc-count">${it.count} 名</div>
+            <div class="fc-detail">${esc(it.detail)}</div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// Family List
+// ============================================================
+function renderFamilyFilters() {
+    const filters = ['全て', 'D7・D14', 'M3 (3か月以内)', 'M4–Y3', 'アラートあり', '要フォロー'];
+    document.getElementById('familyFilters').innerHTML = filters.map(f => `
+        <button class="filter-chip ${f === familyFilter ? 'active' : ''}" onclick="setFamilyFilter('${esc(f)}')">${esc(f)}</button>
+    `).join('');
+}
+function setFamilyFilter(f) {
+    familyFilter = f;
+    renderFamilyFilters();
+    renderFamilies(_allUsers);
+}
+function renderFamilies(users) {
+    let list = users.map(u => ({ ...u, _phase: computePhase(u.firstSeen), _status: userStatus(u) }));
+    if (familyFilter === 'D7・D14') list = list.filter(u => ['H24','D7','D14'].includes(u._phase.code));
+    else if (familyFilter === 'M3 (3か月以内)') list = list.filter(u => u._phase.code === 'M3');
+    else if (familyFilter === 'M4–Y3') list = list.filter(u => ['M4','M10','Y3'].includes(u._phase.code));
+    else if (familyFilter === 'アラートあり') list = list.filter(u => u.alerts > 0);
+    else if (familyFilter === '要フォロー') list = list.filter(u => u._status === '要フォロー' || u._status === '滞留');
+    list.sort((a, b) => b.lastSeen.localeCompare(a.lastSeen));
+
+    const el = document.getElementById('familyTable');
+    if (list.length === 0) { el.innerHTML = emptyState('該当ご遺族なし'); return; }
+    const rows = list.map(u => {
+        const pct = Math.round((u.tasksCompletedSize / 56) * 100);
+        const fillClass = pct >= 60 ? 'positive' : pct >= 25 ? '' : 'warn';
+        const lastFu = lastFollowupForUser(u.user_id);
+        const fuLabel = lastFu
+            ? `<span style="font-size:10px;color:var(--ink-3);">${esc(timeAgo(lastFu.created_at))} ${esc(lastFu.staff_name)}</span>`
+            : '<span style="color:var(--ink-mute);font-size:10px;">—</span>';
+        return `
+        <tr class="clickable" onclick="showFamilyDetail('${esc(u.user_id)}')">
+            <td>${displayName(u.user_id)}</td>
+            <td><span style="font-size:12px;">${esc(fmtDate(u.firstSeen))}</span><div style="font-size:11px;color:var(--ink-3);">経過 ${u._phase.days}日</div></td>
+            <td><span class="badge muted">${esc(u._phase.label)}</span></td>
+            <td class="num">${u.activeDays}</td>
+            <td>
+                <div class="progress-row">
+                    <div class="progress"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+                    <span class="progress-num">${u.tasksCompletedSize}/56</span>
+                </div>
+            </td>
+            <td><span style="font-size:11px;color:var(--ink-3);">${esc(timeAgo(u.lastSeen))}</span></td>
+            <td>${u.alerts > 0 ? `<span class="badge alert">${u.alerts}</span>` : '<span style="color:var(--ink-mute);font-size:11px;">—</span>'}</td>
+            <td>${fuLabel}</td>
+            <td>${statusBadge(u._status)}</td>
+        </tr>`;
+    }).join('');
+    el.innerHTML = `<table>
+        <thead><tr><th>ご遺族</th><th>初回 / 経過</th><th>フェーズ</th><th class="num">アクティブ日</th><th>完了タスク (56)</th><th>最終ログ</th><th>アラート</th><th>最終対応</th><th>状態</th></tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ============================================================
+// フェーズ別分布
+// ============================================================
+function renderPhaseDistribution(users) {
+    const counts = {};
+    PHASE_BUCKETS.forEach(b => counts[b.code] = 0);
+    users.forEach(u => { counts[computePhase(u.firstSeen).code]++; });
+    const max = Math.max(...Object.values(counts), 1);
+    const html = PHASE_BUCKETS.map(b => {
+        const c = counts[b.code];
+        const pct = (c / max) * 100;
+        const isM3 = b.code === 'M3';
+        return `
+        <div class="phase-row">
+            <div class="ph-label">${esc(b.label)} <small>${esc(b.code)}</small></div>
+            <div class="ph-bar"><div class="ph-fill ${isM3 ? 'gold' : ''}" style="width:${pct}%"></div></div>
+            <div class="ph-count">${c} 名</div>
+        </div>`;
+    }).join('');
+    document.getElementById('phaseChart').innerHTML = html;
+}
+
+// ============================================================
+// グリーフ ヒートマップ
+// ============================================================
+function renderHeatmap(events) {
+    const days = 30;
+    const buckets = {};
+    for (let i = 0; i < days; i++) {
+        const d = new Date(Date.now() - (days - 1 - i) * 86400000);
+        buckets[fmtDate(d)] = 0;
+    }
+    events.filter(e => e.event_type === 'grief_log_saved').forEach(e => {
+        const k = e.created_at.slice(0, 10);
+        if (k in buckets) buckets[k]++;
+    });
+    const max = Math.max(...Object.values(buckets), 1);
+    const html = Object.entries(buckets).map(([d, c]) => {
+        let level = 0;
+        if (c > 0) {
+            const r = c / max;
+            if (r > 0.75) level = 4;
+            else if (r > 0.5) level = 3;
+            else if (r > 0.25) level = 2;
+            else level = 1;
+        }
+        return `<div class="heat-cell ${level ? 'l' + level : ''}" title="${d}: ${c}件"></div>`;
+    }).join('');
+    document.getElementById('heatmapGrid').innerHTML = html;
+}
+
+// ============================================================
+// Categories (タスク完了)
+// ============================================================
+function renderCategories(events, users) {
+    const totalUsers = users.length;
+    if (totalUsers === 0) {
+        document.getElementById('categoryList').innerHTML = `<li>${emptyState('対象期間にユーザーなし')}</li>`;
+        return;
+    }
+    const completedByUserDomain = new Map();
+    for (const ev of events) {
+        if (ev.event_type !== 'task_completed') continue;
+        const tid = ev.event_data && ev.event_data.task_id;
+        if (!tid) continue;
+        const dom = TASK_DOMAIN[tid];
+        if (!dom) continue;
+        const key = ev.user_id + '|' + dom;
+        completedByUserDomain.set(key, (completedByUserDomain.get(key) || 0) + 1);
+    }
+    const completedUserCount = {};
+    for (const key of completedByUserDomain.keys()) {
+        const dom = key.split('|')[1];
+        completedUserCount[dom] = (completedUserCount[dom] || 0) + 1;
+    }
+    const domains = Object.keys(DOMAIN_LABEL).filter(d => DOMAIN_TASK_COUNT[d]);
+    domains.sort((a, b) => (DOMAIN_TASK_COUNT[b] || 0) - (DOMAIN_TASK_COUNT[a] || 0));
+    const html = domains.map(d => {
+        const completed = completedUserCount[d] || 0;
+        const pct = totalUsers ? Math.round((completed / totalUsers) * 100) : 0;
+        const status = pct >= 60 ? 'positive' : pct >= 30 ? '' : 'warn';
+        return `
+        <li>
+            <span class="cat-name">${esc(DOMAIN_LABEL[d])} <span class="cat-domain">${esc(d)} (${DOMAIN_TASK_COUNT[d]}タスク)</span></span>
+            <div class="progress"><div class="progress-fill ${status}" style="width:${pct}%"></div></div>
+            <span class="cat-num">${completed}/${totalUsers} (${pct}%)</span>
+        </li>`;
+    }).join('');
+    document.getElementById('categoryList').innerHTML = html;
+}
+
+// ============================================================
+// Memorials
+// ============================================================
+function renderMemorials(events) {
+    const annivEvents = events
+        .filter(e => e.event_type === 'anniv_added')
+        .map(e => {
+            const m = e.event_data && e.event_data.month;
+            const d = e.event_data && e.event_data.day;
+            if (!m || !d) return null;
+            let date = new Date(new Date().getFullYear(), m - 1, d);
+            if (date < new Date()) date = new Date(date.getFullYear() + 1, m - 1, d);
+            return { user_id: e.user_id, date };
+        })
+        .filter(m => m !== null);
+    const limit = Date.now() + 30 * 86400000;
+    const upcoming = annivEvents.filter(m => m.date.getTime() <= limit).sort((a, b) => a.date - b.date);
+    const el = document.getElementById('memorialGrid');
+    if (upcoming.length === 0) {
+        el.innerHTML = emptyState('直近30日に登録された記念日なし', 'ご遺族が anniv_added イベントで登録すると表示されます');
+        return;
+    }
+    el.innerHTML = upcoming.slice(0, 12).map(m => {
+        const imminent = (m.date.getTime() - Date.now()) <= 14 * 86400000;
+        return `
+        <div class="memorial-card${imminent ? ' imminent' : ''}" onclick="showFamilyDetail('${esc(m.user_id)}')" style="cursor:pointer;">
+            <div class="memorial-date">
+                <div class="month">${m.date.getMonth() + 1}月</div>
+                <div class="day">${m.date.getDate()}</div>
+            </div>
+            <div class="memorial-info">
+                <div class="title">記念日 / 法要</div>
+                <div class="sub">${displayName(m.user_id)}</div>
+            </div>
+            ${imminent ? '<span class="badge gold">直近</span>' : ''}
+        </div>`;
+    }).join('');
+}
+
+// ============================================================
+// Trend
+// ============================================================
+function renderTrend(events) {
+    if (events.length === 0) {
+        document.getElementById('trendChart').innerHTML = emptyState('対象期間にイベントなし');
+        document.getElementById('trendInsight').innerHTML = '';
+        return;
+    }
+    const byMonth = new Map();
+    for (const e of events) {
+        const ym = e.created_at.slice(0, 7);
+        if (!byMonth.has(ym)) byMonth.set(ym, { month: ym, dauSet: new Set(), alerts: 0 });
+        const m = byMonth.get(ym);
+        m.dauSet.add(e.user_id);
+        if (e.event_type === 'grief_alert_triggered') m.alerts += 1;
+    }
+    const arr = Array.from(byMonth.values()).map(m => ({ month: m.month, dau: m.dauSet.size, alerts: m.alerts }));
+    arr.sort((a, b) => a.month.localeCompare(b.month));
+    const maxDau = Math.max(...arr.map(d => d.dau), 1);
+    const html = arr.map(d => {
+        const dauH = (d.dau / maxDau) * 92;
+        const alertH = (d.alerts / maxDau) * 92;
+        const month = d.month.slice(5);
+        return `
+        <div class="trend-bar">
+            <div style="width:100%;display:flex;align-items:flex-end;gap:2px;height:104px;justify-content:center;">
+                <div class="bar-shape" style="height:${dauH}%;flex:1;max-width:14px;"><span class="bar-val">${d.dau}</span></div>
+                <div class="bar-shape alert" style="height:${alertH}%;flex:1;max-width:14px;"><span class="bar-val" style="color:var(--alert);">${d.alerts}</span></div>
+            </div>
+            <div class="bar-label">${esc(month)}</div>
+        </div>`;
+    }).join('');
+    document.getElementById('trendChart').innerHTML = `<div class="trend-bars">${html}</div>`;
+    const last = arr[arr.length - 1];
+    document.getElementById('trendInsight').innerHTML =
+        `直近月（${esc(last.month)}）の DAU は <strong>${last.dau}</strong>、グリーフアラート <strong>${last.alerts} 件</strong>。`;
+}
+
+// ============================================================
+// Features
+// ============================================================
+function renderFeatures(events) {
+    const counts = {};
+    for (const e of events) counts[e.event_type] = (counts[e.event_type] || 0) + 1;
+    const FEATURES = [
+        ['マイルストーン到達',     'milestone_shown'],
+        ['マイルストーン振返り',   'milestone_reflection_saved'],
+        ['セラピーフロー 開始',    'therapy_started'],
+        ['セラピーフロー 完了',    'therapy_completed'],
+        ['波の記録 保存',          'wave_saved'],
+        ['思い出 追加',            'grief_memorial_added'],
+        ['AIチャット 開封',        'grief_ai_chat_opened'],
+        ['家族共有 開始',          'case_created'],
+        ['ご家族 招待受諾',        'case_joined'],
+        ['記念日 登録',            'anniv_added'],
+        ['共有書き出し',           'share_action'],
+        ['リマインダー 設定',      'reminder_set'],
+        ['タスク 着手',            'task_started'],
+        ['タスク 詳細閲覧',        'task_detail_opened']
+    ];
+    document.getElementById('featureGrid').innerHTML = FEATURES.map(([label, ev]) => `
+        <div class="feature-card">
+            <div class="label">${esc(label)}</div>
+            <div class="value">${fmtNum(counts[ev] || 0)}</div>
+            <div class="source">${esc(ev)}</div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// 実名連携層 (localStorage / 端末内のみ)
+// ============================================================
+// プライバシー設計: ご遺族の実名・連絡先は Supabase 等 クラウドへ
+// 一切送信せず、端末の localStorage にのみ保存する。
+// ============================================================
+const IDENTITY_KEY = 'rn_identity_map';
+
+function getIdentityMap() {
+    try { return JSON.parse(localStorage.getItem(IDENTITY_KEY) || '{}'); }
+    catch(e) { return {}; }
+}
+function getIdentity(user_id) {
+    return getIdentityMap()[user_id] || null;
+}
+function setIdentity(user_id, data) {
+    const map = getIdentityMap();
+    map[user_id] = { ...data, updated_at: new Date().toISOString() };
+    localStorage.setItem(IDENTITY_KEY, JSON.stringify(map));
+}
+function deleteIdentity(user_id) {
+    const map = getIdentityMap();
+    delete map[user_id];
+    localStorage.setItem(IDENTITY_KEY, JSON.stringify(map));
+}
+function clearAllIdentities() {
+    if (confirm('全てのご遺族実名情報を端末から削除します。よろしいですか？')) {
+        localStorage.removeItem(IDENTITY_KEY);
+        render();
+    }
+}
+
+// プライバシーモード（実名表示 ON/OFF）
+function getPrivacyMode() {
+    return localStorage.getItem('rn_privacy_mode') === 'on';
+}
+function togglePrivacyMode() {
+    const cur = getPrivacyMode();
+    localStorage.setItem('rn_privacy_mode', cur ? 'off' : 'on');
+    updatePrivacyButton();
+    render();
+}
+function updatePrivacyButton() {
+    const btn = document.getElementById('privacyToggle');
+    if (!btn) return;
+    const on = getPrivacyMode();
+    btn.classList.toggle('on', on);
+    btn.innerHTML = `<span class="dot"></span>${on ? '実名表示中（端末内のみ）' : '匿名表示'}`;
+}
+
+// 表示名ヘルパー
+// 優先順位:
+//  1) localStorage の実名管理（getPrivacyMode() ON かつ故人氏名登録あり）= 端末内で葬儀社が登録した 故 ◯◯様
+//  2) アプリでご遺族自身が入力した表示名（event_data.user_name = _selfNameMap）
+//  3) 匿名 ID 末尾4桁
+function displayName(user_id, opt) {
+    opt = opt || {};
+    const id = getIdentity(user_id);
+    if (getPrivacyMode() && id && id.deceased) {
+        const dec = id.deceased ? `故 ${id.deceased}様` : '';
+        const chf = id.chief ? `<span style="font-size:11px;color:var(--ink-3);">喪主 ${id.chief}様</span>` : '';
+        const compact = opt.compact;
+        if (compact) return esc(dec || `…${shortUid(user_id)}`);
+        return `<span class="identity-display"><span class="deceased-name">${esc(dec)}</span>${chf ? ' ' + chf : ''}</span>`;
+    }
+    const selfName = _selfNameMap[user_id];
+    if (selfName) {
+        if (opt.compact) return esc(selfName) + '様';
+        return `<span class="identity-display"><span class="deceased-name">${esc(selfName)}様</span> <span style="font-size:11px;color:var(--ink-3);">（アプリ入力名）</span></span>`;
+    }
+    return `<span class="uid">…${esc(shortUid(user_id))}</span>`;
+}
+function displayNamePlain(user_id) {
+    const id = getIdentity(user_id);
+    if (getPrivacyMode() && id && id.deceased) return `故 ${id.deceased}様`;
+    const selfName = _selfNameMap[user_id];
+    if (selfName) return `${selfName}様`;
+    return `…${shortUid(user_id)}`;
+}
+
+// CSV インポート / エクスポート
+function exportIdentityCSV() {
+    const map = getIdentityMap();
+    const rows = [['user_id','deceased','deceased_age','chief','relation','phone','email','funeral_date','memo']];
+    for (const [uid, d] of Object.entries(map)) {
+        rows.push([uid, d.deceased||'', d.deceased_age||'', d.chief||'', d.relation||'', d.phone||'', d.email||'', d.funeral_date||'', (d.memo||'').replace(/[\r\n]/g,' ')]);
+    }
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([new Uint8Array([0xEF,0xBB,0xBF]), csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reliefnote_identity_${fmtDate(new Date())}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+function importIdentityCSV(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            let text = e.target.result;
+            // BOM 除去
+            if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+            if (lines.length < 2) { alert('CSV の中身が空です'); return; }
+            const header = parseCSVLine(lines[0]).map(h => h.trim());
+            const userIdIdx = header.indexOf('user_id');
+            if (userIdIdx < 0) { alert('CSV ヘッダに user_id が必須です'); return; }
+            const map = getIdentityMap();
+            let added = 0, updated = 0;
+            for (let i = 1; i < lines.length; i++) {
+                const cells = parseCSVLine(lines[i]);
+                const uid = cells[userIdIdx];
+                if (!uid) continue;
+                const obj = {};
+                header.forEach((h, idx) => {
+                    if (h === 'user_id') return;
+                    if (cells[idx] != null) obj[h] = cells[idx];
+                });
+                obj.updated_at = new Date().toISOString();
+                if (map[uid]) updated++; else added++;
+                map[uid] = obj;
+            }
+            localStorage.setItem(IDENTITY_KEY, JSON.stringify(map));
+            alert(`CSV 取込: 新規 ${added} 件 / 更新 ${updated} 件`);
+            render();
+        } catch(err) {
+            alert('CSV 読込エラー: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+function parseCSVLine(line) {
+    const result = [];
+    let cur = '', inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (inQuote) {
+            if (c === '"' && line[i+1] === '"') { cur += '"'; i++; }
+            else if (c === '"') inQuote = false;
+            else cur += c;
+        } else {
+            if (c === '"') inQuote = true;
+            else if (c === ',') { result.push(cur); cur = ''; }
+            else cur += c;
+        }
+    }
+    result.push(cur);
+    return result;
+}
+
+// ============================================================
+// CRM: フォローアップ (Supabase funeral_followups)
+// ============================================================
+let _followups = [];           // 全フォローアップ（チャネル内）
+let _followupsByUser = {};     // user_id → [followups...]
+let _crmAvailable = true;      // テーブル未作成時 false
+
+const ACTION_LABEL = {
+    call:  '電話',
+    email: 'メール',
+    visit: '来店',
+    memo:  'メモ',
+    other: 'その他'
+};
+const OUTCOME_LABEL = {
+    completed:        '対応完了',
+    callback_needed:  '折り返し要',
+    no_response:      '応答なし',
+    rejected:         '断られた',
+    pending:          '保留'
+};
+
+async function fetchFollowups() {
+    if (_isDemo) {
+        _crmAvailable = true;
+        return buildDemoFollowups();
+    }
+    const baseline = getBaselineISO();
+    const url = `${SUPABASE_URL}/rest/v1/funeral_followups`
+        + `?select=id,channel,user_id,staff_name,action_type,outcome,note,created_at`
+        + `&channel=eq.${currentChannel()}`
+        + (baseline ? `&created_at=gte.${baseline}` : '')
+        + `&order=created_at.desc&limit=2000`;
+    try {
+        const res = await fetch(url, {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Accept': 'application/json'
+            }
+        });
+        if (res.status === 404 || res.status === 400) {
+            _crmAvailable = false; return [];
+        }
+        if (!res.ok) {
+            const text = await res.text();
+            if (text.includes('does not exist') || text.includes('42P01')) {
+                _crmAvailable = false; return [];
+            }
+            throw new Error(res.status + ' ' + text.slice(0, 200));
+        }
+        _crmAvailable = true;
+        return await res.json();
+    } catch(e) {
+        // Network or other error — assume CRM unavailable but keep dashboard functional
+        console.warn('[CRM] fetch failed:', e);
+        _crmAvailable = false;
+        return [];
+    }
+}
+
+async function recordFollowup(payload) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/funeral_followups`, {
+        method: 'POST',
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+            channel: currentChannel(),
+            user_id: payload.user_id,
+            staff_name: payload.staff_name,
+            action_type: payload.action_type,
+            outcome: payload.outcome || null,
+            note: payload.note || null
+        })
+    });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(res.status + ' ' + text.slice(0, 200));
+    }
+    const rows = await res.json();
+    const created = rows[0] || null;
+    if (created) {
+        _followups.unshift(created);
+        if (!_followupsByUser[created.user_id]) _followupsByUser[created.user_id] = [];
+        _followupsByUser[created.user_id].unshift(created);
+    }
+    return created;
+}
+
+function buildFollowupsByUser(rows) {
+    const byUser = {};
+    for (const f of rows) {
+        if (!byUser[f.user_id]) byUser[f.user_id] = [];
+        byUser[f.user_id].push(f);
+    }
+    return byUser;
+}
+
+function lastFollowupForUser(user_id) {
+    const list = _followupsByUser[user_id];
+    return (list && list.length) ? list[0] : null;
+}
+
+// ============================================================
+// お声がけスクリプト 自動生成
+// ============================================================
+function getStaffName() {
+    return localStorage.getItem('rn_staff_name') || '事前相談員';
+}
+function setStaffName(name) {
+    localStorage.setItem('rn_staff_name', name);
+}
+function getOrgNameForScript() {
+    return document.getElementById('orgName').value.trim() || '弊社';
+}
+
+function determineContext(user, phase) {
+    const days = phase.days;
+    if (user.alerts7d > 0) return 'grief_alert';
+    if (phase.code === 'M3' && days >= 42 && days <= 49) return '49d_upcoming';
+    if (phase.code === 'M3' && days >= 50 && days <= 56) return '49d_just_passed';
+    if (phase.code === 'M3' && days >= 35 && days < 42) return '49d_2weeks_out';
+    if (phase.code === 'M3' && days >= 90) return 'hyakkanichi';
+    if (phase.code === 'M10' && days >= 330) return 'isshu_or_late';
+    if (phase.code === 'M10' || phase.code === 'Y3') return 'late_phase';
+    if (phase.code === 'D7' || phase.code === 'D14' || phase.code === 'H24') return 'early';
+    const daysSilent = (Date.now() - new Date(user.lastSeen).getTime()) / 86400000;
+    if (daysSilent > 14) return 'silent';
+    return 'normal';
+}
+
+const CONTEXT_INFO = {
+    grief_alert:      { label: 'グリーフアラート発火中',          tone: 'alert' },
+    '49d_upcoming':   { label: '四十九日まで残り 1 週間以内',     tone: 'gold'  },
+    '49d_2weeks_out': { label: '四十九日まで残り 2〜4 週間',      tone: 'gold'  },
+    '49d_just_passed':{ label: '四十九日 直後',                   tone: 'gold'  },
+    hyakkanichi:      { label: '百ヶ日 近接',                     tone: 'gold'  },
+    isshu_or_late:    { label: '一周忌 近接',                     tone: 'gold'  },
+    late_phase:       { label: '長期フェーズ (M10/Y3)',            tone: ''      },
+    early:            { label: '初期手続き期 (H24/D7/D14)',       tone: ''      },
+    silent:           { label: '14 日以上 アプリ未利用',          tone: 'alert' },
+    normal:           { label: '通常運用',                         tone: ''      }
+};
+
+const SCRIPT_TIPS = {
+    grief_alert:      '焦らせず傾聴の姿勢で。商品提案は持ち出さない。「気にかけている」だけ伝える。',
+    '49d_upcoming':   '法要準備の進捗確認から入り、本位牌・仏壇は会話の流れで自然に。',
+    '49d_2weeks_out': '会場・親族連絡の進捗確認が中心。仏壇話はまだ早い。',
+    '49d_just_passed':'まず法要のねぎらい。本位牌の話は ご遺族の様子を見ながら。',
+    hyakkanichi:      'お墓参り・お供えを起点に、追加法要のご相談を。',
+    isshu_or_late:    '長期間ご一緒した感謝を述べてから、年法要のご相談へ。',
+    late_phase:       '長期フェーズは関係性維持中心。商品提案は控えめに。',
+    early:            '手続き支援が中心。商品提案は控える。役所手続きの不明点を聞き出す。',
+    silent:           '催促にならぬよう。安否確認のトーン徹底。何も用件なしで OK。',
+    normal:           '関係性維持の挨拶。次の節目までの緩やかな見守り姿勢で。'
+};
+
+const SCRIPT_TEMPLATES = {
+    grief_alert: {
+        phone: (u, p, ec, org, staff) =>
+`お世話になっております、${org} ${staff}でございます。
+
+その後、お変わりございませんでしょうか。
+ふと気にかかりまして、お電話差し上げました。
+
+お疲れが出ておられる頃かと存じます。何か少しでも、お話しいただけることがございましたら、お時間のあるときで構いません。
+
+無理にとは申しません。ただ、御社のことを気にかけている人間がここにおりますとお伝えしたく、お電話いたしました。`,
+        email: (u, p, ec, org, staff) =>
+`件名: ご様子を伺って
+
+その後、お変わりございませんでしょうか。
+${org} ${staff}でございます。
+
+何かと大変な日々をお過ごしのことと拝察いたします。
+手続きやお気持ちの整理は、急がず御社のペースで進めていただいて構いません。
+
+お話を伺うだけでも構いません。お電話、ご来店、いつでも歓迎いたします。
+
+決してご返信は不要でございます。お読みいただき、ありがとうございました。
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`お時間のあるときに、お茶でもいかがでしょうか。
+特別な用件はございません。お話を伺うだけで構いません。
+
+お顔を見せていただけるだけで、こちらも安心いたします。`
+    },
+    '49d_upcoming': {
+        phone: (u, p, ec, org, staff) => {
+            const left = 49 - p.days;
+            return `お世話になっております、${org} ${staff}でございます。
+
+四十九日のご法要まで、いよいよ${left}日となりましたね。
+お準備のほう、いかがでいらっしゃいますか。
+
+会場のお手配、お身内へのご連絡など、お疲れではありませんでしょうか。
+
+そろそろ本位牌へのお切り替え、お仏壇のことなど、お考えの頃合いかと存じます。
+もしご検討いただけるのであれば、カタログのお送りも、ご来店でのご相談も承れます。
+
+ご無理のない範囲で、お気軽にご相談ください。`;
+        },
+        email: (u, p, ec, org, staff) => {
+            const left = 49 - p.days;
+            return `件名: 四十九日のご準備について
+
+拝啓
+${org} ${staff}でございます。
+
+四十九日のご法要まで、あと${left}日となりました。
+お変わりなくお過ごしでしょうか。
+
+この時期は、本位牌へのお切り替え、お仏壇のご検討など、
+お気持ちと合わせていろいろなご準備が重なる時期かと存じます。
+
+お仏壇カタログのご郵送、ご来店でのご相談、
+いずれもご対応可能でございます。
+
+これまでアプリで${u.tasksCompletedSize}件のお手続きを進められてこられたこと、
+心より敬意を表します。
+
+何卒よろしくお願い申し上げます。
+敬具
+
+${org}
+${staff}`;
+        },
+        visit: (u, p, ec, org, staff) =>
+`本位牌・お仏壇のことで、ご来店でのご相談はいかがでしょうか。
+実物をご覧いただくと、ご家族でのご相談もしやすくなります。
+
+ご来店の日時、ご都合のよろしい候補をお聞かせください。
+お時間は 30 分から 1 時間ほどを目安にお取りしております。`
+    },
+    '49d_2weeks_out': {
+        phone: (u, p, ec, org, staff) => {
+            const left = 49 - p.days;
+            return `お世話になっております、${org} ${staff}でございます。
+
+四十九日のご法要まで、あと${left}日ほどでいらっしゃいますね。
+お変わりございませんか。
+
+会場のご手配、お参りのお身内へのご連絡など、お進みでしょうか。
+お困りごとがございましたら、お気軽にご相談ください。
+
+ご法要前にご準備が必要なものがございましたら、
+当社でお手伝いできることもございますので、お声がけください。`;
+        },
+        email: (u, p, ec, org, staff) => {
+            const left = 49 - p.days;
+            return `件名: 四十九日のご準備、いかがですか
+
+拝啓
+${org} ${staff}でございます。お変わりございませんでしょうか。
+
+四十九日のご法要まで、あと${left}日となりました。
+会場のお手配、お身内へのご連絡など、徐々にご準備が必要な時期かと存じます。
+
+当社で対応可能なこと、ご相談いただけることがございましたら、
+お気軽にお声がけください。
+
+何卒よろしくお願い申し上げます。
+敬具
+
+${org}
+${staff}`;
+        },
+        visit: (u, p, ec, org, staff) =>
+`法要の段取りやお身内お招きのご相談で、ご来店いただいても対応可能です。
+お時間のあるときに、お気軽にお立ち寄りください。`
+    },
+    '49d_just_passed': {
+        phone: (u, p, ec, org, staff) => {
+            const elapsed = p.days - 49;
+            return `お世話になっております、${org} ${staff}でございます。
+
+先日は四十九日のご法要、誠にお疲れさまでございました。
+${elapsed}日が経ちましたが、お疲れは出ておられませんでしょうか。
+
+大切な節目を無事にお迎えになられたこと、
+心よりお慶び申し上げます。
+
+これからは本位牌をお仏壇に安置し、
+日々のご供養を続けていかれる時期となりますね。
+
+本位牌のご検討、お仏壇のことなど、お話しを伺うだけでも構いませんので、
+お時間のあるときにお気軽にご相談ください。`;
+        },
+        email: (u, p, ec, org, staff) =>
+`件名: 四十九日 ご法要を終えられて
+
+拝啓
+先日は四十九日のご法要、誠にお疲れさまでございました。
+${org} ${staff}でございます。
+
+大切な節目を無事にお迎えになられたこと、
+心よりお慶び申し上げます。
+
+これからは本位牌をお仏壇に安置し、
+日々のご供養を続けていかれる時期となります。
+
+本位牌のご検討、お仏壇のことなど、
+お話しを伺うだけでも構いませんので、お気軽にご相談ください。
+
+敬具
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`本位牌のお迎え、お仏壇のご検討で、御来店いただけませんでしょうか。
+お時間のあるときに、ご都合のよろしい日時をお聞かせください。`
+    },
+    hyakkanichi: {
+        phone: (u, p, ec, org, staff) =>
+`お世話になっております、${org} ${staff}でございます。
+お変わりございませんでしょうか。
+
+まもなく百ヶ日でいらっしゃいますね。
+
+お墓参り、お供え物のご準備、ご親族へのお声がけなど、
+お困りごとがございましたら、お気軽にご相談ください。
+
+百ヶ日のあとも、節目節目で気にかけてまいります。`,
+        email: (u, p, ec, org, staff) =>
+`件名: 百ヶ日のお参りについて
+
+拝啓
+${org} ${staff}でございます。
+
+まもなく百ヶ日のお参りを迎えられる頃合いでございますね。
+お供え物、お墓参り、追加でご検討の法要など、
+ご相談ありましたらご遠慮なくお申し付けください。
+
+敬具
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`お墓参り後にお茶でもお持ちしながら、お話しできればと思います。
+お気軽にお立ち寄りください。`
+    },
+    isshu_or_late: {
+        phone: (u, p, ec, org, staff) =>
+`お世話になっております、${org} ${staff}でございます。
+
+月日が経つのは早いもので、まもなく一周忌でいらっしゃいますね。
+${u.activeDays}日にわたり、当社のサポートをご利用いただきありがとうございました。
+
+一周忌のお参り、お供え、ご親族へのご連絡など、
+何かご支援できることがございましたら、お声がけください。
+
+会場のお手配、僧侶様のご手配、いずれもご相談承れます。`,
+        email: (u, p, ec, org, staff) =>
+`件名: 一周忌のご準備について
+
+拝啓
+${org} ${staff}でございます。
+
+月日が経つのは早いもので、まもなく一周忌を迎えられる頃かと存じます。
+
+これまで${u.activeDays}日にわたり、ご手続きやお気持ちの記録に取り組まれてきたことと拝察いたします。
+一周忌のお参り、お供え、お墓のことなど、
+ご相談ございましたらお気軽にお申し付けください。
+
+敬具
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`一周忌のご相談、ご来店でも対応可能です。
+お時間のあるときに、ご都合のよろしい日時をお聞かせください。`
+    },
+    late_phase: {
+        phone: (u, p, ec, org, staff) =>
+`お世話になっております、${org} ${staff}でございます。
+お変わりございませんでしょうか。
+
+${u.activeDays}日にわたり、当社のサポートをご利用いただきありがとうございます。
+${p.label}でいらっしゃいますね。
+
+何かと節目を迎えられる時期かと存じます。
+お困りごと、ご相談ごとがございましたら、お気軽にお声がけください。`,
+        email: (u, p, ec, org, staff) =>
+`件名: お変わりございませんか
+
+拝啓
+${org} ${staff}でございます。
+
+長きにわたり、当社のサポートをご利用いただきありがとうございます。
+お変わりなくお過ごしでしょうか。
+
+ご相続、不動産名義、ご年法要など、
+このフェーズ特有のご相談がございましたら、お気軽にお申し付けください。
+
+敬具
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`お近くにお越しの際は、お気軽にお立ち寄りください。
+お変わりないお顔を拝見できれば、こちらも安心いたします。`
+    },
+    early: {
+        phone: (u, p, ec, org, staff) =>
+`お世話になっております、${org} ${staff}でございます。
+
+先日のお見送り、本当にお疲れさまでございました。
+
+役所手続き、ご年金、保険のご請求など、何かと立て込む時期かと存じます。
+${u.tasksCompletedSize}件のお手続きをアプリでお進めいただいておりますが、
+ご不明な点はございませんでしょうか。
+
+特に、健康保険のご返却、ご年金の停止、葬祭費のご申請は
+期日のあるお手続きでございます。お困りでしたらお手伝いいたします。`,
+        email: (u, p, ec, org, staff) =>
+`件名: ご手続きのことで何かありましたら
+
+拝啓
+${org} ${staff}でございます。
+先日のお見送り、誠にお疲れさまでございました。
+
+ご家族様におかれましては、役所手続きや保険のご請求など、
+何かと立て込む日々をお過ごしのことと存じます。
+
+アプリのほう、ご手続きの進捗が${u.tasksCompletedSize}件まで進んでいらっしゃるようで、
+心より敬意を表します。
+
+ご不明な点や、お困りごとがございましたら、いつでもご相談ください。
+
+敬具
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`お手続き書類の整理など、ご来店いただければ対面でご支援できます。
+書類をお持ちいただければ、その場で確認・整理のお手伝いも可能です。`
+    },
+    silent: {
+        phone: (u, p, ec, org, staff) => {
+            const silent = Math.floor((Date.now() - new Date(u.lastSeen).getTime()) / 86400000);
+            return `お世話になっております、${org} ${staff}でございます。
+
+ご無沙汰しておりますが、お変わりございませんでしょうか。
+
+最近アプリのご利用がないようで、ふと気にかかりお電話差し上げました。
+
+お手続き、お気持ち、何かお困りのことはございませんでしょうか。
+特に用件があるわけではございません。
+
+ただ、御社のことを気にかけている人間がここにおりますとお伝えしたく、
+お電話いたしました。`;
+        },
+        email: (u, p, ec, org, staff) =>
+`件名: ご様子を伺って
+
+拝啓
+${org} ${staff}でございます。
+
+しばらくお声をいただいておりませんので、
+ふと気にかかりお便り差し上げました。
+
+お手続きのこと、お気持ちのこと、お困りごとがございましたら、
+お気軽にご連絡ください。
+
+特別な用件があるわけではございません。
+ただ、御社のことを気にかけている人間がここにおります、
+というだけのことでございます。
+
+ご返信は不要でございます。お読みいただき、ありがとうございました。
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`お時間のあるときに、お顔を見せにいらしてください。
+お茶でもどうぞ。`
+    },
+    normal: {
+        phone: (u, p, ec, org, staff) =>
+`お世話になっております、${org} ${staff}でございます。
+お変わりございませんでしょうか。
+
+御社のご様子、定期的にお気にかけております。
+${p.label}でいらっしゃいますね。
+
+${u.tasksCompletedSize}件の手続きをお進めいただき、心より敬意を表します。
+
+ご不明な点、お困りごとがございましたら、いつでもお気軽にご相談ください。`,
+        email: (u, p, ec, org, staff) =>
+`件名: お変わりございませんか
+
+拝啓
+${org} ${staff}でございます。
+
+お変わりなくお過ごしでしょうか。
+アプリでの進捗、${u.tasksCompletedSize}件のお手続きを進めていただいておりますね。
+
+手続きのこと、お気持ちのこと、何でもご相談ください。
+
+敬具
+
+${org}
+${staff}`,
+        visit: (u, p, ec, org, staff) =>
+`お近くにお越しの際は、お気軽にお立ち寄りください。
+お茶を一杯お持ちします。`
+    }
+};
+
+function generateScript(user, type) {
+    const phase = computePhase(user.firstSeen);
+    const ctx = determineContext(user, phase);
+    const tmpl = (SCRIPT_TEMPLATES[ctx] && SCRIPT_TEMPLATES[ctx][type])
+        || SCRIPT_TEMPLATES.normal[type];
+    return tmpl(user, phase, user.eventCounts, getOrgNameForScript(), getStaffName());
+}
+
+let _currentScriptUser = null;
+let _currentScriptType = 'phone';
+
+function switchScriptTab(type) {
+    if (!_currentScriptUser) return;
+    _currentScriptType = type;
+    document.querySelectorAll('.script-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.type === type);
+    });
+    document.getElementById('scriptText').value = generateScript(_currentScriptUser, type);
+    const btn = document.getElementById('btnCopyScript');
+    if (btn) { btn.classList.remove('copied'); btn.textContent = 'コピー'; }
+}
+
+function copyScript() {
+    const text = document.getElementById('scriptText').value;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btnCopyScript');
+        btn.classList.add('copied');
+        btn.textContent = 'コピーしました';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.textContent = 'コピー';
+        }, 2200);
+    }).catch(err => {
+        alert('コピーに失敗しました: ' + err.message);
+    });
+}
+
+function onStaffNameChange() {
+    const v = document.getElementById('staffName').value.trim();
+    setStaffName(v || '事前相談員');
+    if (_currentScriptUser) {
+        document.getElementById('scriptText').value = generateScript(_currentScriptUser, _currentScriptType);
+    }
+}
+
+// ============================================================
+// ご遺族詳細モーダル
+// ============================================================
+function showFamilyDetail(user_id) {
+    const u = _allUsersMap[user_id];
+    if (!u) return;
+    const phase = computePhase(u.firstSeen);
+    const status = userStatus(u);
+    const events = u.events.slice().reverse(); // newest first
+
+    // event type counts for this user
+    const ec = u.eventCounts;
+
+    const recommendation = (() => {
+        if (u.alerts7d >= 1) return { tone: 'alert', text: 'グリーフアラート発火中。<strong>24時間以内のお声がけ</strong>を強く推奨。' };
+        if (phase.code === 'M3' && phase.days >= 35 && phase.days <= 56) {
+            return { tone: 'gold', text: '<strong>仏壇・本位牌・法要のご相談ベストタイミング</strong>。電話 / 来店誘導 / カタログ郵送のいずれかを。' };
+        }
+        if (status === '要フォロー') return { tone: 'alert', text: '<strong>14日以上アプリ未利用</strong>。安否確認のお電話を。' };
+        if (status === '滞留') return { tone: '', text: '<strong>7日以上アプリ未利用</strong>。次の手続きでお困りの可能性。' };
+        return { tone: '', text: '順調に進捗中。当面お声がけ不要。' };
+    })();
+
+    // スクリプト生成準備
+    _currentScriptUser = u;
+    _currentScriptType = 'phone';
+    const ctx = determineContext(u, phase);
+    const ctxInfo = CONTEXT_INFO[ctx] || CONTEXT_INFO.normal;
+    const initialScript = generateScript(u, 'phone');
+
+    const id = getIdentity(user_id) || {};
+    const titleName = (getPrivacyMode() && id.deceased)
+        ? `故 ${esc(id.deceased)}様` + (id.chief ? ` <span style="font-size:13px;color:var(--ink-3);font-weight:500;">/ 喪主 ${esc(id.chief)}様</span>` : '')
+        : `ご遺族 詳細 <span class="uid">…${esc(shortUid(user_id))}</span>`;
+
+    const modalHTML = `
+    <div class="modal-head">
+        <div>
+            <h3>${titleName}</h3>
+            <div class="head-meta">${esc(phase.label)} / ${esc(status)}${id.phone ? ' / ' + esc(id.phone) : ''}</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+        <div class="modal-section">
+            <h4>サマリー</h4>
+            <div class="detail-grid">
+                <div class="detail-stat"><div class="label">user_id</div><div class="value mono" style="font-size:13px;">${esc(user_id)}</div></div>
+                <div class="detail-stat"><div class="label">初回利用</div><div class="value" style="font-size:14px;">${esc(fmtDate(u.firstSeen))}</div></div>
+                <div class="detail-stat"><div class="label">経過日数</div><div class="value">${phase.days}日</div></div>
+                <div class="detail-stat"><div class="label">アクティブ日数</div><div class="value">${u.activeDays}日</div></div>
+                <div class="detail-stat"><div class="label">完了タスク</div><div class="value">${u.tasksCompletedSize}/56</div></div>
+                <div class="detail-stat"><div class="label">グリーフ記録</div><div class="value">${u.griefLogs}</div></div>
+                <div class="detail-stat"><div class="label">アラート発火</div><div class="value">${u.alerts}</div></div>
+                <div class="detail-stat"><div class="label">最終アクセス</div><div class="value" style="font-size:13px;">${esc(timeAgo(u.lastSeen))}</div></div>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h4>ご遺族情報（端末内のみ保存）</h4>
+            <div class="identity-form">
+                <label>故人氏名<input type="text" id="id_deceased" value="${esc(id.deceased||'')}" placeholder="山田 太郎"></label>
+                <label>故人年齢<input type="text" id="id_deceased_age" value="${esc(id.deceased_age||'')}" placeholder="82"></label>
+                <label>喪主氏名<input type="text" id="id_chief" value="${esc(id.chief||'')}" placeholder="山田 花子"></label>
+                <label>続柄<input type="text" id="id_relation" value="${esc(id.relation||'')}" placeholder="配偶者 / 長男 等"></label>
+                <label>連絡先 電話<input type="text" id="id_phone" value="${esc(id.phone||'')}" placeholder="090-XXXX-XXXX"></label>
+                <label>連絡先 メール<input type="text" id="id_email" value="${esc(id.email||'')}" placeholder="example@..."></label>
+                <label>施行日<input type="date" id="id_funeral_date" value="${esc(id.funeral_date||'')}"></label>
+                <label style="grid-column: 1 / -1;">メモ<textarea id="id_memo" placeholder="社内メモ・特記事項">${esc(id.memo||'')}</textarea></label>
+                <div class="actions">
+                    <button class="btn-save" onclick="saveIdentityFromModal('${esc(user_id)}')">保存</button>
+                    ${id.deceased ? `<button class="btn-clear" onclick="if(confirm('この方の実名情報を端末から削除しますか？')){deleteIdentity('${esc(user_id)}');showFamilyDetail('${esc(user_id)}');render();}">削除</button>` : ''}
+                    <span class="privacy-note">この情報は <strong>localStorage</strong>（端末内のみ）に保存され、Supabase 等クラウドへ送信されません。</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h4>推奨アクション</h4>
+            <div class="insight ${recommendation.tone}">${recommendation.text}</div>
+        </div>
+
+        <div class="modal-section">
+            <h4>お声がけスクリプト（自動生成）</h4>
+            <div class="script-section">
+                <div class="staff-input-row">
+                    <label>担当者名:</label>
+                    <input id="staffName" type="text" value="${esc(getStaffName())}" oninput="onStaffNameChange()" maxlength="20" placeholder="例: 田中">
+                    <span class="context-pill ${ctxInfo.tone ? ctxInfo.tone + '-ctx' : ''}">${esc(ctxInfo.label)}</span>
+                </div>
+                <div class="script-tabs">
+                    <button class="script-tab active" data-type="phone" onclick="switchScriptTab('phone')">📞 お電話</button>
+                    <button class="script-tab" data-type="email" onclick="switchScriptTab('email')">✉️ メール</button>
+                    <button class="script-tab" data-type="visit" onclick="switchScriptTab('visit')">🏠 ご来店誘導</button>
+                </div>
+                <textarea class="script-text" id="scriptText" spellcheck="false">${esc(initialScript)}</textarea>
+                <div class="script-actions">
+                    <span class="script-tip">${esc(SCRIPT_TIPS[ctx] || SCRIPT_TIPS.normal)}</span>
+                    <button class="btn-copy" id="btnCopyScript" onclick="copyScript()">コピー</button>
+                </div>
+                <div class="script-disclaimer">※ アプリ実イベントから状況を判定し、御社名・担当者名・経過日数・完了タスク数を埋め込んだ自動生成サンプルです。御社のトーンや関係性に合わせて適宜編集してご利用ください。</div>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h4>対応を記録する（CRM）</h4>
+            ${_crmAvailable ? `
+            <div class="followup-form">
+                <div class="followup-form-grid">
+                    <label>担当者
+                        <input type="text" id="fu_staff" value="${esc(getStaffName())}" placeholder="例: 田中">
+                    </label>
+                    <label>種別
+                        <select id="fu_action">
+                            <option value="call">📞 電話</option>
+                            <option value="email">✉️ メール</option>
+                            <option value="visit">🏠 来店</option>
+                            <option value="memo">📝 社内メモ</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </label>
+                    <label>結果
+                        <select id="fu_outcome">
+                            <option value="completed">対応完了</option>
+                            <option value="callback_needed">折り返し要</option>
+                            <option value="no_response">応答なし</option>
+                            <option value="rejected">断られた</option>
+                            <option value="pending">保留</option>
+                        </select>
+                    </label>
+                </div>
+                <textarea id="fu_note" placeholder="社内メモ：会話の要点、次回フォロー予定、ご遺族のお気持ちなど"></textarea>
+                <div class="followup-form-actions">
+                    <span style="font-size:11px;color:var(--ink-3);">記録は funeral_followups テーブルに保存。スタッフ全員が共有閲覧可。</span>
+                    <button class="btn-save" id="fuSubmit" onclick="submitFollowup('${esc(user_id)}')">記録する</button>
+                </div>
+            </div>
+            ` : `
+            <div class="insight alert">
+                <strong>CRM テーブル未作成</strong>: <code>supabase/migrations/011_funeral_followups.sql</code> を Supabase Dashboard の SQL Editor で実行してください。実行後、ダッシュボードを再読み込みすると有効化されます。
+            </div>
+            `}
+
+            <h4 style="margin-top:18px;">対応履歴（このご遺族）</h4>
+            ${(_followupsByUser[user_id] && _followupsByUser[user_id].length) ? `
+            <div class="followup-history">
+                ${_followupsByUser[user_id].map(f => `
+                <div class="followup-entry action-${esc(f.action_type)}">
+                    <div class="followup-head">
+                        <span class="when">${esc(fmtDateTime(f.created_at))} (${esc(timeAgo(f.created_at))})</span>
+                        <span class="who">${esc(f.staff_name)}</span>
+                        <span class="what action-${esc(f.action_type)}">${esc(ACTION_LABEL[f.action_type] || f.action_type)}</span>
+                        ${f.outcome ? `<span class="followup-outcome outcome-${esc(f.outcome)}">${esc(OUTCOME_LABEL[f.outcome] || f.outcome)}</span>` : ''}
+                    </div>
+                    ${f.note ? `<div class="followup-note">${esc(f.note)}</div>` : ''}
+                </div>
+                `).join('')}
+            </div>
+            ` : `<div class="empty-state" style="padding:14px;text-align:left;">この方への対応記録はまだありません。</div>`}
+        </div>
+
+        <div class="modal-section">
+            <h4>機能利用 内訳</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                ${Object.entries(ec).sort((a,b) => b[1] - a[1]).slice(0, 12).map(([t, c]) =>
+                    `<span class="badge muted">${esc(EVENT_LABEL[t] || t)} ×${c}</span>`
+                ).join('')}
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h4>イベントタイムライン（直近 50 件）</h4>
+            <div class="timeline">
+                ${events.slice(0, 50).map(ev => {
+                    const tone = ev.event_type === 'grief_alert_triggered' ? 'alert'
+                              : ev.event_type === 'task_completed' ? 'gold' : '';
+                    const label = EVENT_LABEL[ev.event_type] || ev.event_type;
+                    let dataStr = '';
+                    if (ev.event_data) {
+                        const d = Object.entries(ev.event_data).filter(([k]) => !['channel','partner'].includes(k));
+                        if (d.length) dataStr = d.map(([k, v]) => `${k}=${typeof v === 'string' ? v.slice(0, 30) : v}`).join(' ');
+                    }
+                    return `
+                    <div class="timeline-item ${tone}">
+                        <div class="ti-when">${esc(fmtDateTime(ev.created_at))} (${esc(timeAgo(ev.created_at))})</div>
+                        <div class="ti-event">${esc(label)} <code style="font-size:10px;">${esc(ev.event_type)}</code></div>
+                        ${dataStr ? `<div class="ti-data">${esc(dataStr)}</div>` : ''}
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+    </div>`;
+    document.getElementById('modalContent').innerHTML = modalHTML;
+    document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+});
+
+// 実名情報をモーダルから保存
+function saveIdentityFromModal(user_id) {
+    const data = {
+        deceased: document.getElementById('id_deceased').value.trim(),
+        deceased_age: document.getElementById('id_deceased_age').value.trim(),
+        chief: document.getElementById('id_chief').value.trim(),
+        relation: document.getElementById('id_relation').value.trim(),
+        phone: document.getElementById('id_phone').value.trim(),
+        email: document.getElementById('id_email').value.trim(),
+        funeral_date: document.getElementById('id_funeral_date').value.trim(),
+        memo: document.getElementById('id_memo').value.trim()
+    };
+    setIdentity(user_id, data);
+    // モーダルを再描画して結果反映
+    showFamilyDetail(user_id);
+    // 各セクションの表示も更新
+    renderFamilies(_allUsers);
+    renderQueue(_events, _allUsers);
+    renderIdentitySummary();
+    renderHero(_events, _allUsers);
+    // 保存通知
+    const note = document.createElement('div');
+    note.textContent = '✓ 端末内に保存しました';
+    note.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--positive);color:white;padding:10px 16px;border-radius:8px;font-size:13px;z-index:200;box-shadow:var(--shadow-lift);';
+    document.body.appendChild(note);
+    setTimeout(() => note.remove(), 2000);
+}
+
+// フォローアップを送信
+async function submitFollowup(user_id) {
+    const btn = document.getElementById('fuSubmit');
+    const staff = document.getElementById('fu_staff').value.trim();
+    const action = document.getElementById('fu_action').value;
+    const outcome = document.getElementById('fu_outcome').value;
+    const note = document.getElementById('fu_note').value.trim();
+    if (!staff) { alert('担当者名は必須です'); return; }
+    btn.disabled = true;
+    btn.textContent = '保存中…';
+    try {
+        await recordFollowup({
+            user_id, staff_name: staff, action_type: action, outcome, note
+        });
+        setStaffName(staff);
+        // モーダル再描画 + 関連セクション更新
+        showFamilyDetail(user_id);
+        renderQueue(_events, _allUsers);
+        renderStaffSummary(parseInt(document.getElementById('rangeSelect').value, 10));
+        renderHero(_events, _allUsers);
+        const note2 = document.createElement('div');
+        note2.textContent = '✓ 対応を記録しました';
+        note2.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--positive);color:white;padding:10px 16px;border-radius:8px;font-size:13px;z-index:200;box-shadow:var(--shadow-lift);';
+        document.body.appendChild(note2);
+        setTimeout(() => note2.remove(), 2000);
+    } catch(e) {
+        alert('記録に失敗しました: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = '記録する';
+    }
+}
+
+// ============================================================
+// 未対応キュー
+// ============================================================
+function renderQueue(events, users) {
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    const seventyTwoHoursAgo = Date.now() - 72 * 3600 * 1000;
+    const items = [];
+
+    for (const u of users) {
+        const phase = computePhase(u.firstSeen);
+        const lastSeen = new Date(u.lastSeen).getTime();
+        const lastFollowup = lastFollowupForUser(u.user_id);
+        const lastFollowupAt = lastFollowup ? new Date(lastFollowup.created_at).getTime() : 0;
+
+        // 直近対応済みは除外
+        if (lastFollowupAt >= seventyTwoHoursAgo) continue;
+
+        let priority = 0, tier = 'normal', reason = '';
+
+        if (u.alerts7d > 0) {
+            priority = 100 + u.alerts7d;
+            tier = 'urgent';
+            reason = `<strong>グリーフアラート ${u.alerts7d} 件</strong>（直近7日）。`;
+        } else if (phase.code === 'M3' && phase.days >= 42 && phase.days <= 49) {
+            priority = 80 + (49 - phase.days);
+            tier = 'gold';
+            reason = `<strong>四十九日まで残り ${49 - phase.days} 日</strong>。仏壇・本位牌・法要のご相談タイミング。`;
+        } else if (phase.code === 'M3' && phase.days >= 35 && phase.days <= 65 && lastSeen >= sevenDaysAgo) {
+            priority = 60;
+            tier = 'gold';
+            reason = `49日前後（経過 ${phase.days} 日）かつ直近 7 日アクティブ。`;
+        } else if (Date.now() - lastSeen > 14 * 86400000 && !['M10','Y3'].includes(phase.code)) {
+            priority = 50;
+            tier = 'warn';
+            const silent = Math.floor((Date.now() - lastSeen) / 86400000);
+            reason = `<strong>${silent} 日間アプリ未利用</strong>。`;
+        } else {
+            continue;  // 通常状態 = キュー入りしない
+        }
+
+        if (lastFollowup) {
+            const ago = Math.floor((Date.now() - lastFollowupAt) / 3600 / 1000);
+            reason += ` 最終対応: <strong>${ago < 24 ? ago + ' 時間前' : Math.floor(ago/24) + ' 日前'}</strong>（${esc(lastFollowup.staff_name)} / ${esc(ACTION_LABEL[lastFollowup.action_type] || lastFollowup.action_type)}）。`;
+        } else {
+            reason += ' <strong>未対応</strong>。';
+        }
+
+        items.push({ user: u, priority, tier, reason });
+    }
+    items.sort((a, b) => b.priority - a.priority);
+
+    const el = document.getElementById('queueList');
+    if (items.length === 0) {
+        el.innerHTML = emptyState('未対応のご遺族はいません', 'グリーフアラート発火・49日前後・14日未利用のご遺族で、直近72時間に対応記録があるため全てクリア済み');
+        return;
+    }
+    el.innerHTML = items.slice(0, 12).map(it => `
+        <div class="queue-item ${it.tier}" onclick="showFamilyDetail('${esc(it.user.user_id)}')">
+            <div class="queue-info">
+                <div class="target">${displayName(it.user.user_id)}</div>
+                <div class="meta">${it.reason} 経過 ${computePhase(it.user.firstSeen).days}日 / 完了 ${it.user.tasksCompletedSize}/56</div>
+            </div>
+            <button class="queue-action" onclick="event.stopPropagation(); showFamilyDetail('${esc(it.user.user_id)}')">対応する</button>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// スタッフ別 業務サマリー
+// ============================================================
+function renderStaffSummary(days) {
+    const el = document.getElementById('staffGrid');
+    if (!_crmAvailable) {
+        el.innerHTML = emptyState('CRM 未接続', '<code>supabase/migrations/011_funeral_followups.sql</code> を Supabase Dashboard で適用してください');
+        return;
+    }
+    if (_followups.length === 0) {
+        el.innerHTML = emptyState('対応記録なし', 'ご遺族モーダルで「対応を記録する」を使うと、ここにスタッフ別の集計が表示されます');
+        return;
+    }
+    const since = Date.now() - days * 86400000;
+    const byStaff = {};
+    for (const f of _followups) {
+        if (new Date(f.created_at).getTime() < since) continue;
+        if (!byStaff[f.staff_name]) {
+            byStaff[f.staff_name] = { name: f.staff_name, actions: 0, families: new Set(), latest: null, latestUser: null };
+        }
+        const s = byStaff[f.staff_name];
+        s.actions++;
+        s.families.add(f.user_id);
+        if (!s.latest || f.created_at > s.latest) {
+            s.latest = f.created_at;
+            s.latestUser = f.user_id;
+            s.latestAction = f.action_type;
+            s.latestNote = f.note;
+        }
+    }
+    const list = Object.values(byStaff).sort((a, b) => b.actions - a.actions);
+    if (list.length === 0) {
+        el.innerHTML = emptyState(`直近${days}日に対応記録なし`);
+        return;
+    }
+    el.innerHTML = list.map(s => `
+        <div class="staff-card">
+            <div class="name">${esc(s.name)}</div>
+            <div class="stats">
+                <div class="stat"><div class="num">${s.actions}</div><div class="lbl">対応件数</div></div>
+                <div class="stat"><div class="num">${s.families.size}</div><div class="lbl">担当遺族数</div></div>
+            </div>
+            <div class="recent">
+                直近: ${esc(timeAgo(s.latest))} / <strong>${esc(displayNamePlain(s.latestUser))}</strong> に ${esc(ACTION_LABEL[s.latestAction] || s.latestAction)}
+                ${s.latestNote ? `<br>「${esc(s.latestNote.slice(0, 40))}${s.latestNote.length > 40 ? '…' : ''}」` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// 実名管理 サマリー
+// ============================================================
+function renderIdentitySummary() {
+    const map = getIdentityMap();
+    const total = Object.keys(map).length;
+    const matched = _allUsers.filter(u => map[u.user_id]).length;
+    const el = document.getElementById('identitySummary');
+    el.innerHTML = `
+        端末内に登録済み: <strong>${total} 件</strong>
+        / アプリ利用中ご遺族との突合: <strong>${matched}/${_allUsers.length}</strong> 名
+        / プライバシーモード: <strong>${getPrivacyMode() ? 'ON（実名表示）' : 'OFF（匿名表示）'}</strong>
+    `;
+    renderIdentityQuickList();
+}
+
+function renderIdentityQuickList() {
+    const el = document.getElementById('identityQuickList');
+    if (!el) return;
+    if (!_allUsers || _allUsers.length === 0) {
+        el.innerHTML = '';
+        return;
+    }
+    const map = getIdentityMap();
+    const sorted = _allUsers.slice().sort((a, b) => (a.firstSeen < b.firstSeen ? 1 : -1));
+    const unregistered = sorted.filter(u => !map[u.user_id]);
+    const registered = sorted.filter(u => map[u.user_id]);
+
+    function rowHtml(u, isReg) {
+        const id = map[u.user_id] || {};
+        const phase = computePhase(u.firstSeen);
+        const firstDate = fmtDate(u.firstSeen);
+        const cls = isReg ? 'registered' : 'unregistered';
+        const safeUid = esc(u.user_id);
+        const selfName = _selfNameMap[u.user_id] || '';
+        const selfNameLine = selfName
+            ? `<br><strong style="color:var(--brand);">アプリ入力: ${esc(selfName)}様</strong>`
+            : '';
+        return `
+            <div class="identity-quick-row ${cls}">
+                <div class="uid-cell" title="${safeUid}">…${esc(shortUid(u.user_id))}</div>
+                <div class="meta-cell">${esc(firstDate)} 開始<br>${esc(phase.label.split(' / ')[0])}${selfNameLine}</div>
+                <input type="text" placeholder="故人氏名（例: 山田 太郎）" value="${esc(id.deceased||'')}" data-uid="${safeUid}" data-field="deceased">
+                <input type="text" placeholder="喪主氏名（例: 山田 花子）" value="${esc(id.chief||'')}" data-uid="${safeUid}" data-field="chief">
+                <input type="text" placeholder="続柄" value="${esc(id.relation||'')}" data-uid="${safeUid}" data-field="relation">
+                <button class="save-btn" onclick="saveIdentityQuick('${safeUid}', this)">保存</button>
+            </div>`;
+    }
+
+    el.innerHTML = `
+        <div class="identity-quick-section">
+            <h4>未登録のご遺族 <span class="count-pill">${unregistered.length}</span><span style="font-weight:400;font-size:11px;color:var(--ink-3);">— 故人氏名を入れて保存すると、自動で実名表示に切替わります</span></h4>
+            ${unregistered.length === 0 ? '<div style="font-size:12px;color:var(--ink-3);padding:6px 0;">全ご遺族が登録済みです。</div>' : unregistered.map(u => rowHtml(u, false)).join('')}
+        </div>
+        ${registered.length > 0 ? `
+        <div class="identity-quick-section">
+            <h4>登録済み <span class="count-pill">${registered.length}</span></h4>
+            ${registered.map(u => rowHtml(u, true)).join('')}
+        </div>` : ''}
+    `;
+}
+
+function saveIdentityQuick(user_id, btn) {
+    const row = btn.closest('.identity-quick-row');
+    if (!row) return;
+    const inputs = row.querySelectorAll('input[data-uid]');
+    const data = {};
+    inputs.forEach(i => { data[i.dataset.field] = i.value.trim(); });
+    if (!data.deceased && !data.chief) {
+        alert('故人氏名または喪主氏名を入力してください。');
+        return;
+    }
+    // 既存値を保持しつつマージ
+    const existing = getIdentity(user_id) || {};
+    setIdentity(user_id, { ...existing, ...data });
+    // 初回登録時、自動で実名表示に切替
+    if (!getPrivacyMode()) {
+        localStorage.setItem('rn_privacy_mode', 'on');
+        updatePrivacyButton();
+    }
+    btn.textContent = '✓ 保存';
+    btn.classList.add('saved');
+    setTimeout(() => {
+        renderIdentitySummary();
+        renderQueue(_events, _allUsers);
+        renderHero(_events, _allUsers);
+        renderFamilies(_allUsers);
+        renderTouchpoints(_allUsers);
+        renderAlerts(_allUsers);
+    }, 350);
+}
+
+// ============================================================
+// CRM ステータス pill
+// ============================================================
+function renderCrmStatus() {
+    const el = document.getElementById('crmStatus');
+    if (!el) return;
+    if (_crmAvailable) {
+        el.className = 'crm-status-pill connected';
+        el.textContent = `CRM 接続OK / ${_followups.length} 件の対応記録`;
+    } else {
+        el.className = 'crm-status-pill disconnected';
+        el.textContent = 'CRM テーブル未作成 (migration 011 を適用してください)';
+    }
+}
+
+// ============================================================
+// Loading state
+// ============================================================
+function showLoadingAll() {
+    document.getElementById('actionList').innerHTML = loadingState();
+    document.getElementById('queueList').innerHTML = loadingState();
+    document.getElementById('staffGrid').innerHTML = loadingState();
+    document.getElementById('roiGrid').innerHTML = '';
+    document.getElementById('impactGrid').innerHTML = '';
+    document.getElementById('summaryGrid').innerHTML = '';
+    document.getElementById('alertTable').innerHTML = loadingState();
+    document.getElementById('touchpointTable').innerHTML = loadingState();
+    document.getElementById('forecastGrid').innerHTML = loadingState();
+    document.getElementById('familyTable').innerHTML = loadingState();
+    document.getElementById('phaseChart').innerHTML = loadingState();
+    document.getElementById('heatmapGrid').innerHTML = '';
+    document.getElementById('categoryList').innerHTML = `<li>${loadingState()}</li>`;
+    document.getElementById('memorialGrid').innerHTML = loadingState();
+    document.getElementById('trendChart').innerHTML = loadingState();
+    document.getElementById('featureGrid').innerHTML = loadingState();
+    document.getElementById('alertInsight').innerHTML = '';
+    document.getElementById('touchpointInsight').innerHTML = '';
+    document.getElementById('trendInsight').innerHTML = '';
+    document.getElementById('identitySummary').innerHTML = '';
+}
+
+// ============================================================
+// 御社名 (localStorage)
+// ============================================================
+function syncOrgName() {
+    const input = document.getElementById('orgName');
+    input.value = localStorage.getItem('reliefnote_org_name') || '';
+    input.addEventListener('input', () => {
+        localStorage.setItem('reliefnote_org_name', input.value);
+        renderUpdated();
+    });
+}
+function renderUpdated() {
+    const name = document.getElementById('orgName').value.trim() || '御社';
+    document.getElementById('updatedAt').textContent =
+        `${name} アフターケア状況 / 最終更新: ${new Date().toLocaleString('ja-JP')}`;
+    const ch = currentChannel();
+    const src = document.getElementById('alertSource');
+    if (src) src.textContent = `event_type='grief_alert_triggered' AND channel='${ch}'`;
+}
+
+// ============================================================
+// メイン
+// ============================================================
+async function render() {
+    renderUpdated();
+    applyBaselineBanner();
+    updatePrivacyButton();
+    setStatus('loading', '読み込み中…');
+    showLoadingAll();
+    hideError();
+    try {
+        // event_logs と funeral_followups を並列取得
+        const [events, followups] = await Promise.all([
+            fetchAllEvents(),
+            fetchFollowups()
+        ]);
+        _events = events;
+        _followups = followups || [];
+        _followupsByUser = buildFollowupsByUser(_followups);
+        _selfNameMap = buildSelfNameMap(_events);
+        _allUsers = aggregateUsers(_events);
+        _allUsersMap = {};
+        _allUsers.forEach(u => { _allUsersMap[u.user_id] = u; });
+        const days = parseInt(document.getElementById('rangeSelect').value, 10);
+        setStatus('ok', `接続OK / ${fmtNum(_events.length)}イベント / ${_allUsers.length}人 / 対応記録${_followups.length}件`);
+        renderCrmStatus();
+        renderHero(_events, _allUsers);
+        renderQueue(_events, _allUsers);
+        renderStaffSummary(days);
+        renderROI(_events, _allUsers, days);
+        renderImpact(_events, _allUsers, days);
+        renderSummary(_events, days);
+        renderAlerts(_allUsers);
+        renderTouchpoints(_allUsers);
+        renderForecast(_allUsers, _events);
+        renderFamilyFilters();
+        renderFamilies(_allUsers);
+        renderPhaseDistribution(_allUsers);
+        renderHeatmap(_events);
+        renderCategories(_events, _allUsers);
+        renderMemorials(_events);
+        renderTrend(_events);
+        renderFeatures(_events);
+        renderIdentitySummary();
+    } catch (e) {
+        setStatus('err', '接続エラー');
+        showError(e.message);
+        _events = []; _allUsers = []; _allUsersMap = {}; _followups = []; _followupsByUser = {}; _selfNameMap = {};
+        renderCrmStatus();
+        renderHero([], []); renderQueue([], []); renderStaffSummary(30);
+        renderROI([], [], 30); renderImpact([], [], 30);
+        renderSummary([], 30); renderAlerts([]); renderTouchpoints([]);
+        renderForecast([], []); renderFamilyFilters(); renderFamilies([]);
+        renderPhaseDistribution([]); renderHeatmap([]); renderCategories([], []);
+        renderMemorials([]); renderTrend([]); renderFeatures([]);
+        renderIdentitySummary();
+    }
+}
+
+syncOrgName();
+applyLevelClass();
+applyDemoBanner();
+applyBaselineBanner();
+render();
+</script>
+
+</body>
+</html>

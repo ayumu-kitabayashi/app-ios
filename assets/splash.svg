@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2732" height="2732" viewBox="0 0 2732 2732">
+  <rect width="2732" height="2732" fill="#F4F2EC"/>
+  <g transform="translate(1366 1210)">
+    <!-- 葉マーク（インク） -->
+    <g transform="scale(0.62)">
+      <path d="M 0 -235
+               C 150 -190, 205 -60, 175 90
+               C 150 205, 60 250, 0 258
+               C -60 250, -150 205, -175 90
+               C -205 -60, -150 -190, 0 -235 Z"
+            fill="#3A3E31"/>
+      <path d="M 0 -200 L 0 235" stroke="#C79355" stroke-width="14" stroke-linecap="round"/>
+    </g>
+  </g>
+  <text x="1366" y="1560" text-anchor="middle" font-family="Hiragino Mincho ProN, YuMincho, serif" font-size="150" fill="#3A3E31" letter-spacing="6">ReliefNote</text>
+  <text x="1366" y="1650" text-anchor="middle" font-family="Hiragino Sans, sans-serif" font-size="52" fill="#8C8A80" letter-spacing="4">家族の備えと手続き</text>
+</svg>

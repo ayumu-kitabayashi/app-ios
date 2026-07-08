@@ -1,0 +1,25 @@
+message_id,message_group,delivery_channel,surface,trigger_type,trigger_condition,title,body,priority,max_send,dedupe_scope
+MSG-MILESTONE-001,MILESTONE,IN_APP_ONLY,TOAST,EVENT,resolved_task_count == 1,最初の一歩です,最初の一歩を踏み出しました。その調子です。,MEDIUM,1,CASE
+MSG-MILESTONE-005,MILESTONE,IN_APP_ONLY,TOAST,EVENT,resolved_task_count == 5,5件完了,5つ終わりました。着実に進んでいます。,MEDIUM,1,CASE
+MSG-MILESTONE-010,MILESTONE,IN_APP_ONLY,TOAST,EVENT,resolved_task_count == 10,10件完了,10のタスクを終えました。よく頑張っています。,MEDIUM,1,CASE
+MSG-MILESTONE-020,MILESTONE,IN_APP_ONLY,TOAST,EVENT,resolved_task_count == 20,20件完了,20のタスクを終えました。大きな山を越えています。,MEDIUM,1,CASE
+MSG-PHASE-COMPLETE,MILESTONE,IN_APP_ONLY,TOAST,EVENT,all_tasks_in_current_phase_resolved == true,このフェーズを完了しました,このフェーズのタスクをすべて終えました。お疲れさまでした。,MEDIUM,8,CASE+PHASE
+MSG-ALL-COMPLETE,MILESTONE,IN_APP_ONLY,TOAST,EVENT,all_tasks_resolved == true,すべて完了しました,すべての手続きが完了しました。長い道のりを最後まで歩ききったあなたに、心から敬意を表します。お疲れさまでした。,HIGH,1,CASE
+MSG-DEADLINE-MINUS-7,DEADLINE,BOTH,PUSH/INBOX,SCHEDULE,legal_due_task AND days_until_due == 7 AND task_status in [OPEN;NEED_CONFIRM;BLOCKED],届出期限まであと7日です,「{task_title}」の届出期限まであと7日です。確認してみましょう。,HIGH,1,TASK+OFFSET
+MSG-DEADLINE-MINUS-3,DEADLINE,BOTH,PUSH/INBOX,SCHEDULE,legal_due_task AND days_until_due == 3 AND task_status in [OPEN;NEED_CONFIRM;BLOCKED],届出期限まであと3日です,「{task_title}」の届出期限まであと3日です。お手続きはお済みですか？,HIGH,1,TASK+OFFSET
+MSG-DEADLINE-DAY-0,DEADLINE,BOTH,PUSH/INBOX,SCHEDULE,legal_due_task AND days_until_due == 0 AND task_status in [OPEN;NEED_CONFIRM;BLOCKED],届出期限は今日です,「{task_title}」の届出期限は今日です。難しい場合は、窓口にご相談ください。,CRITICAL,1,TASK+OFFSET
+MSG-DEADLINE-OVERDUE-INITIAL,DEADLINE,BOTH,PUSH/INBOX,SCHEDULE,legal_due_task AND days_since_due == 1 AND task_status in [OPEN;NEED_CONFIRM;BLOCKED],届出期限を過ぎています,「{task_title}」の届出期限を過ぎています。まだ届出できる場合がほとんどです。窓口にご確認ください。,HIGH,1,TASK+OFFSET
+MSG-DEADLINE-OVERDUE-REPEAT,DEADLINE,PUSH_ONLY,PUSH,SCHEDULE,legal_due_task AND days_since_due in [7;14;21] AND task_status in [OPEN;NEED_CONFIRM;BLOCKED],期限を過ぎた手続きがあります,期限を過ぎた手続きがあります。確認してみませんか？,MEDIUM,3,TASK+OFFSET
+MSG-PHASE-TRANSITION,SYSTEM,BOTH,PUSH/INBOX,SCHEDULE,current_phase_changed == true,新しいフェーズのタスクが追加されました,新しいフェーズのタスクが追加されました。確認してみましょう。,MEDIUM,7,CASE+PHASE
+MSG-INACTIVITY-007,INACTIVITY,BOTH,PUSH/INBOX,SCHEDULE,days_since_last_activity == 7,続きはいつでも再開できます,お手続きの状況はいかがですか？少しずつで大丈夫です。続きはいつでもここから始められます。,LOW,1,CASE+OFFSET
+MSG-INACTIVITY-014,INACTIVITY,BOTH,PUSH/INBOX,SCHEDULE,days_since_last_activity == 14,お気持ちが向いたときに,お忙しい日々が続いているかもしれません。期限が近いタスクがあれば、お知らせします。お気持ちが向いたときに、いつでも戻ってきてください。,LOW,1,CASE+OFFSET
+MSG-OVERDUE-MULTIPLE,RISK,IN_APP_ONLY,INBOX,CONDITION,overdue_legal_task_count >= 3,期限超過の手続きがいくつかあります,期限を過ぎた手続きがいくつかあります。多くの手続きは期限を過ぎても届出できます。まずは1つだけ、取りかかってみませんか？,HIGH,1,CASE+STATE
+MSG-ONBOARD-NO-PROGRESS-24H,INACTIVITY,BOTH,PUSH/INBOX,SCHEDULE,hours_since_registration >= 24 AND resolved_task_count == 0,最初の一歩がいちばん大変です,最初の一歩が一番大変です。一番上のタスクから順番に進めるだけで大丈夫です。,MEDIUM,1,CASE+STATE
+MSG-BANNER-DOD-MISSING,HOME_BANNER,HOME_ONLY,HOME_BANNER,RENDER,Q-DOD-01 is null,亡くなった日を入力してください,亡くなった日を入力すると、届出の期限を正確に計算できます。,CRITICAL,,VIEW
+MSG-BANNER-STEP2-PENDING,HOME_BANNER,HOME_ONLY,HOME_BANNER,RENDER,step2_has_unanswered_questions == true AND elapsed_days >= 3,いくつか確認したいことがあります,答えると、あなたに必要な手続きがもっと正確にわかります。,HIGH,,VIEW
+MSG-BANNER-STEP3-PENDING,HOME_BANNER,HOME_ONLY,HOME_BANNER,RENDER,step3_has_unanswered_questions == true AND elapsed_days >= 10,まだ確認できていない項目があります,14日以内の手続きに関わるので、確認してみましょう。,HIGH,,VIEW
+MSG-BANNER-STEP4-PENDING,HOME_BANNER,HOME_ONLY,HOME_BANNER,RENDER,step4_has_unanswered_questions == true AND elapsed_days >= 60,3か月以降の手続きについて確認したいことがあります,あとで困らないよう、いくつか確認しておきましょう。,MEDIUM,,VIEW
+MSG-HOME-EMPTY-PHASE-DONE,HOME_EMPTY,HOME_ONLY,HOME_EMPTY,RENDER,groupA_count == 0 AND groupB_count == 0 AND all_tasks_resolved != true,このフェーズは完了しています,このフェーズのタスクはすべて終わっています。お疲れさまでした。次のフェーズのタスクは時期が来たらお知らせします。,LOW,,VIEW
+MSG-HOME-EMPTY-ALL-DONE,HOME_EMPTY,HOME_ONLY,HOME_EMPTY,RENDER,all_tasks_resolved == true,すべての手続きが完了しました,すべての手続きが完了しました。長い道のりを最後まで歩ききったあなたに、心から敬意を表します。お疲れさまでした。,MEDIUM,,VIEW
+MSG-HOME-EMPTY-STEP1-PENDING,HOME_EMPTY,HOME_ONLY,HOME_EMPTY,RENDER,step1_completed == false,まずはいくつかの質問に答えてください,あなたの状況に合った手続きリストを作成します。（所要時間：約1〜2分）,HIGH,,VIEW
+MSG-HOME-EMPTY-NO-PROGRESS,HOME_EMPTY,HOME_ONLY,HOME_EMPTY,RENDER,step1_completed == true AND resolved_task_count == 0,あなたの手続きリストができました,一番上から順番に、ひとつずつ進めていけば大丈夫です。,MEDIUM,,VIEW

@@ -1,0 +1,35 @@
+{
+  "name": "reliefnote",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ReliefNote - 遺族のためのGPS",
+  "scripts": {
+    "serve": "npx http-server -p 8080 -c-1 .",
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:ui": "npx playwright test --ui",
+    "build:www": "bash scripts/build-www.sh",
+    "cap:copy": "npm run build:www && npx cap copy ios",
+    "cap:open": "npx cap open ios",
+    "assets:build": "qlmanage -t -s 1024 -o assets assets/icon.svg && qlmanage -t -s 2732 -o assets assets/splash.svg && mv -f assets/icon.svg.png assets/icon.png && mv -f assets/splash.svg.png assets/splash.png && cp -f assets/splash.png assets/splash-dark.png",
+    "assets:ios": "npm run assets:build && npx @capacitor/assets generate --ios",
+    "cap:ios": "npm run build:www && npx cap add ios",
+    "cap:sync": "npm run build:www && npx cap sync ios",
+    "ota": "npm run build:www && npx @capgo/cli bundle upload --channel production",
+    "sync-csv": "node scripts/sync_csv_to_html.mjs",
+    "verify-csv": "node scripts/verify_sync.mjs",
+    "check-scripts": "node scripts/check_scripts.mjs",
+    "docs:update": "node scripts/update_docs.mjs"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@playwright/test": "^1.47.0",
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1",
+    "@capgo/capacitor-updater": "^8.50.2"
+  }
+}

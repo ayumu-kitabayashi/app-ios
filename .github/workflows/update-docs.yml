@@ -1,0 +1,66 @@
+name: Update docs (auto)
+
+on:
+  # 1. 週次定期実行 (毎週月曜 09:00 JST = 00:00 UTC)
+  schedule:
+    - cron: "0 0 * * 1"
+  # 2. main への push トリガー (CSV/マイグレーション/index.html 変更時のみ)
+  push:
+    branches: [main]
+    paths:
+      - "data/**"
+      - "supabase/migrations/**"
+      - "index.html"
+      - "scripts/update_docs.mjs"
+  # 3. 手動実行 (Actions タブから)
+  workflow_dispatch:
+
+permissions:
+  contents: write   # docs/ への自動コミットに必要
+
+concurrency:
+  # push と cron が重なっても 1 つだけ走らせる
+  group: update-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 自分でコミットを push するため fetch-depth は 0 必須
+          fetch-depth: 0
+          # GITHUB_TOKEN を使うため persist-credentials は true (デフォルト)
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run docs update script
+        run: node scripts/update_docs.mjs
+
+      - name: Detect changes
+        id: diff
+        run: |
+          if git diff --quiet docs/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No doc changes detected."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Doc changes detected:"
+            git diff --stat docs/
+          fi
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git commit -m "chore(docs): auto-update metrics
+
+          Updated by .github/workflows/update-docs.yml"
+          git push
