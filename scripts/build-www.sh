@@ -16,4 +16,7 @@ cp "$ROOT/sw.js"           "$WWW/" 2>/dev/null || true
 cp -R "$ROOT/data"         "$WWW/" 2>/dev/null || true
 cp -R "$ROOT/images"       "$WWW/" 2>/dev/null || true
 
+# www/index.html を圧縮（起動時パースを軽量化）。正本 index.html は無加工のまま。
+node "$ROOT/scripts/minify-www.mjs" "$WWW/index.html"
+
 echo "www/ を組み立てました: $WWW"

@@ -4,7 +4,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <!-- HTMLはキャッシュしない: 新しいデプロイを確実に届けるため -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -163,6 +163,8 @@
             background: var(--bg-warm);
             -webkit-font-smoothing: antialiased;
             overscroll-behavior-y: none;
+            /* ダブルタップ判定待ちを無くしタップを即応させる（体感の"爽快さ"に直結） */
+            touch-action: manipulation;
         }
 
         .app-container {
@@ -937,7 +939,7 @@
             cursor: pointer;
             text-align: center;
             font-size: 14px;
-            transition: all 0.15s;
+            transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
             color: var(--text-primary);
         }
         .option-btn:active { opacity: 0.7; }
@@ -2162,7 +2164,7 @@
             border-radius: 50%;
             background: var(--bg-primary);
             position: relative;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
             margin-top: 1px;
             padding: 0;
             box-sizing: border-box;
@@ -2969,7 +2971,7 @@
             border-radius: 50%;
             background: var(--bg-primary);
             position: relative;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
         }
 
         .detail-step-checkbox:checked {
@@ -3150,7 +3152,7 @@
             justify-content: center;
             font-size: 11px;
             font-weight: 600;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
             flex-shrink: 0;
             margin-top: 3px;
             cursor: pointer;
@@ -4055,7 +4057,7 @@
             cursor: pointer;
             font-family: inherit;
             -webkit-tap-highlight-color: transparent;
-            transition: all 0.12s ease;
+            transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease, transform 0.12s ease;
         }
         .local-experts-card-fav-btn svg { width: 11px; height: 11px; }
         .local-experts-card-fav-btn.is-fav {
@@ -4783,7 +4785,7 @@
             justify-content: center;
             border-radius: 12px;
             cursor: pointer;
-            transition: all 150ms ease;
+            transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, opacity 150ms ease, transform 150ms ease;
             border: none;
         }
 
@@ -5049,7 +5051,7 @@
             padding: 0 20px;
             max-height: 0;
             overflow: hidden;
-            transition: all 0.3s;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s;
             color: var(--text-secondary);
         }
 
@@ -6312,10 +6314,9 @@
             font-size: 11.5px;
             color: var(--text-tertiary);
             line-height: 1.65;
-            background: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.9);
             border: 1px solid rgba(58, 63, 50, 0.06);
             border-radius: 14px;
-            backdrop-filter: blur(4px);
         }
         .expert-landing-footnote svg { color: #3A3E31; margin-top: 1px; flex-shrink: 0; }
 
@@ -7861,7 +7862,7 @@
             font-size: 18px;
             cursor: pointer;
             padding: 8px 14px;
-            transition: all 0.2s;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s;
             font-weight: 600;
         }
 
@@ -7894,7 +7895,7 @@
             padding: 4px 12px;
             border-radius: 16px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s;
         }
 
         .today-btn:hover {
@@ -7951,7 +7952,7 @@
             padding: 4px 2px;
             cursor: pointer;
             border-radius: 10px;
-            transition: all 0.2s;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s;
             position: relative;
         }
 
@@ -9994,7 +9995,7 @@
             color: var(--text-secondary);
             cursor: pointer;
             font-family: inherit;
-            transition: all 0.15s;
+            transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
             min-height: 40px;
         }
         .grief-body-check-options button.selected-yes {
@@ -11187,7 +11188,7 @@
             border-radius: 50%;
             background: #3A3E31;
             opacity: 0.2;
-            transition: all 0.4s ease;
+            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
         }
         .sc-dot.active {
             opacity: 1;
@@ -13642,7 +13643,7 @@
             font-family: inherit;
             white-space: nowrap;
             flex-shrink: 0;
-            transition: all 0.15s;
+            transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
         }
         .grief-memorial-tab svg {
             width: 12px;
@@ -13827,7 +13828,7 @@
             font-size: 13px;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all .15s ease;
+            transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease, opacity .15s ease, transform .15s ease;
             font-family: inherit;
         }
         .grief-emotion-chip.selected {
@@ -15150,7 +15151,7 @@
             font-weight: 500;
             color: var(--text-tertiary);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
             text-align: center;
         }
         .assignee-filter-btn.active {
@@ -15177,8 +15178,6 @@
         .review-modal-overlay {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
             display: none; align-items: center; justify-content: center;
             z-index: 2000;
             padding: 20px;
@@ -15706,7 +15705,7 @@
             border: 2px solid var(--border-light) !important;
             border-radius: 12px !important;
             background: #FFFFFF !important;
-            transition: all 0.15s ease;
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
         }
         #screen-confirm .q-option:hover,
         #screen-confirm .q-option:active,
